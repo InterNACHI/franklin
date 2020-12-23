@@ -5,6 +5,7 @@ import getCountry from './get-country.mjs';
 
 async function run() {
 	const countries = await getCountries();
+	const defaults = await getCountry('ZZ');
 	
 	countries.forEach(async country => {
 		try {
