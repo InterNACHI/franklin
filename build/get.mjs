@@ -33,7 +33,7 @@ async function download(path) {
 		? root
 		: `${ root }/${ path }`;
 	
-	console.info(`Downloading ${ url } from Google...`);
+	// console.info(`Downloading ${ url } from Google...`);
 	
 	let res = await get(url);
 	
@@ -65,7 +65,7 @@ function loadFromCache(path) {
 			}
 			
 			try {
-				console.info(`Loading ${ path } from cache...`);
+				//console.info(`Loading ${ path } from cache...`);
 				return resolve(JSON.parse(data));
 			} catch (e) {
 				resolve(false);
@@ -78,7 +78,7 @@ function writeToCache(path, data) {
 	const filename = cacheFile(path);
 	const dir = dirname(filename);
 	
-	console.log(`Creating ${ dir } and writing to ${ filename }`);
+	//console.log(`Creating ${ dir } and writing to ${ filename }`);
 	
 	return new Promise(resolve => {
 		mkdir(dir, { recursive: true }, (err) => {
