@@ -1,13 +1,15 @@
 {
 	"name": "@internachi/franklin-standalone",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/InterNACHI/franklin#readme",
 	"license": "MIT",
 	"main": "./dist/franklin-standalone.js",
 	"exports": "./dist/franklin-standalone.modern.js",
 	"unpkg": "./dist/franklin-standalone.umd.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/InterNACHI/franklin.git"
@@ -16,7 +18,7 @@
 		"build": "microbundle build --alias react=preact/compat"
 	},
 	"dependencies": {
-		"@internachi/franklin": "^0.0.4"
+		"@internachi/franklin": "^0.0.5"
 	},
 	"devDependencies": {
 		"microbundle": "^0.13.0",
