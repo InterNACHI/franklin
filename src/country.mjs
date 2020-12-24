@@ -1,6 +1,6 @@
 import { expand, expandFlags, COUNTRY, FIELDS, LABELS, SUBDIVISION } from './mappers.mjs';
 
-export default function Country(compressed) {
+export default function expandCountry(compressed) {
 		const expanded = expand(compressed, COUNTRY);
 		
 		expanded.grid = expanded.grid.map(row => expandFlags(row, FIELDS));

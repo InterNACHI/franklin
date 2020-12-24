@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import getCountries from './get-countries.mjs';
 import getCountry from './get-country.mjs';
 import expandCountry from '../src/country.mjs';
-import { COUNTRY, expand, expandFlags, FIELDS, LABELS } from '../src/mappers.mjs';
+import { COUNTRY, expand, expandFlags, FIELDS } from '../src/mappers.mjs';
 
 async function run() {
 	const countries = await getCountries();

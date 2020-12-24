@@ -50,6 +50,7 @@ function buildGrid(definition) {
 				grid.push({});
 			} else if ('address' === name) {
 				grid[grid.length - 1].address1 = true;
+				grid.push({});
 				grid[grid.length - 1].address2 = true;
 			} else if (name) {
 				grid[grid.length - 1][name] = true;
