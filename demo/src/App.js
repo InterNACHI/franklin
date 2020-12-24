@@ -1,4 +1,4 @@
-import { Address } from '@internachi/franklin/dist/franklin.js';
+g
 
 export default function App() {
 	return (

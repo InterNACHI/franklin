@@ -7,9 +7,7 @@
 	"main": "./dist/franklin-standalone.js",
 	"exports": "./dist/franklin-standalone.modern.js",
 	"unpkg": "./dist/franklin-standalone.umd.js",
-	"publishConfig": {
-		"access": "public"
-	},
+	"files": ["dist"],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/InterNACHI/franklin.git"
