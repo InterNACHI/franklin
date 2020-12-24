@@ -1,5 +1,5 @@
 import get from './get.mjs';
-import Country from './models/Country.mjs';
+import Country, { loadTerritories } from './models/Country.mjs';
 
 let defaults = null;
 
@@ -9,6 +9,8 @@ export default async function getCountry(country) {
 	if (null === defaults && 'ZZ' !== country) {
 		defaults = await getCountry('ZZ');
 	}
+	
+	await loadTerritories();
 	
 	return new Country({
 		...defaults,

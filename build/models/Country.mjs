@@ -1,4 +1,5 @@
 import Subdivision from './Subdivision.mjs';
+import getTerritories from '../get-territories.mjs';
 
 // 	"id": "data/ZZ",
 // 	"fmt": "%N%n%O%n%A%n%C",
@@ -9,26 +10,69 @@ import Subdivision from './Subdivision.mjs';
 // 	"locality_name_type": "city",
 // 	"sublocality_name_type": "suburb"
 
+let territories = null;
+
 export default class Country
 {
-	constructor(definition)
-	{
+	constructor(definition) {
 		Object.entries(normalize(definition)).forEach(([key, value]) => {
 			this[key] = value;
 		});
 	}
+	
+	export() {
+		return [
+			this.key,
+			this.name,
+			this.grid,
+			this.subdivisions.map(subdivision => subdivision.export()),
+		];
+	}
+}
+
+export async function loadTerritories() {
+	if (null === territories) {
+		territories = await getTerritories();
+	}
 }
 
 function normalize(definition) {
+	definition = setProperName(definition);
 	definition = expandLists(definition);
 	definition = buildRegularExpressions(definition);
 	definition = buildSubdivisions(definition);
+	definition = buildGrid(definition);
+	
+	return definition;
+}
+
+function setProperName(definition) {
+	if (definition.key in territories) {
+		definition.name = territories[definition.key];
+	}
+	
+	return definition;
+}
+
+function buildGrid(definition) {
+	const extractor = /%([a-z])/gi;
+	
+	definition.grid = [...definition.fmt.matchAll(extractor)]
+		.map(([_, token]) => 'n' === token ? '|' : token)
+		.filter(token => 'S' !== token && 'O' !== token)
+		.join('')
+		.replace(/\|{2,}/g, '|')
+		.split('|');
 	
 	return definition;
 }
 
 function buildSubdivisions(original) {
+	// Extract data
 	let { sub_keys = null, sub_names = [], sub_zips = [], ...definition } = original;
+	
+	// Set up default
+	definition.subdivisions = [];
 	
 	if (null !== sub_keys) {
 		definition.subdivisions = sub_keys.map((key, index) => {
@@ -122,6 +166,40 @@ function extract(country, key) {
 			break;
 	}
 }
+
+const NEW_LINE = "%n";
+
+const fieldWidths = {
+	SHORT: 'SHORT', // "S" and "N" (eventually maybe narrow)
+	LONG: 'LONG', // "L"
+};
+
+const fields = {
+	COUNTRY: 'R',
+	ADDRESS_LINE_1: '1',
+	ADDRESS_LINE_2: '2',
+	STREET_ADDRESS: 'A',
+	ADMIN_AREA: 'S',
+	LOCALITY: 'C',
+	DEPENDENT_LOCALITY: 'D',
+	POSTAL_CODE: 'Z',
+	SORTING_CODE: 'X',
+	RECIPIENT: 'N',
+	ORGANIZATION: 'O',
+};
+
+function getDefaultWidthType(field) {
+	if (field === fields.POSTAL_CODE || field === fields.SORTING_CODE) {
+		return fieldWidths.SHORT;
+	}
+	
+	return fieldWidths.LONG;
+}
+
+// AddressField.STREET_ADDRESS gets converted on-the-fly to ADDRESS_LINE_1 and ADDRESS_LINE_2
+// "require" is set to the keys that are required, i.e. "ACSZ" for US (Address, Locality, Admin Area, Postal)
+// "upper" is set to the values that are upper-cased, i.e. "CS" for US (Locality and Admin Area)
+
 
 // NOTES:
 

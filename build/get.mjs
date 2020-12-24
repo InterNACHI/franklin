@@ -3,16 +3,16 @@ import { writeFile, readFile, mkdir } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const root = 'https://chromium-i18n.appspot.com/ssl-address/data';
+const DEFAULT_ROOT = 'https://chromium-i18n.appspot.com/ssl-address/data';
 
-export default async function(path) {
+export default async function(path, root = DEFAULT_ROOT) {
 	const cached = await loadFromCache(path);
 	
 	if (cached) {
 		return cached;
 	}
 	
-	return await download(path);
+	return await download(path, root);
 }
 
 function get(url) {
@@ -28,7 +28,7 @@ function get(url) {
 	});
 }
 
-async function download(path) {
+async function download(path, root) {
 	let url = '' === path
 		? root
 		: `${ root }/${ path }`;
@@ -106,5 +106,6 @@ function cacheFile(path) {
 	
 	const build_dir = dirname(fileURLToPath(import.meta.url));
 	
-	return resolve(build_dir, '..', 'data', `${ path }.json`);
+	return resolve(build_dir, '..', 'data', `${ path }.json`)
+		.replace(/(\.json){2,}$/i, '.json');
 }

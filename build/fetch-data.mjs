@@ -2,6 +2,7 @@
 
 import getCountries from './get-countries.mjs';
 import getCountry from './get-country.mjs';
+import getTerritories from './get-territories.mjs';
 
 async function run() {
 	const countries = await getCountries();
