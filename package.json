@@ -1,6 +1,6 @@
 {
   "name": "@internachi/franklin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A universal mailing address input",
   "source": "./src/index.mjs",
   "main": "./dist/franklin.js",
@@ -11,8 +11,8 @@
     "build-data": "./build/index.mjs",
     "tailwind": "tailwindcss-cli build ./css/src.css -o ./css/tailwind.css",
     "tailwind-prod": "NODE_ENV=production tailwindcss-cli build ./css/src.css -o ./css/prod.css",
-    "build": "microbundle --css inline",
-    "dev": "microbundle watch --css inline",
+    "build": "microbundle",
+    "dev": "microbundle watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
