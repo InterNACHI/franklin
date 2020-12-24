@@ -9,12 +9,12 @@
     "build": "yarn run build-data && lerna run build --parallel",
     "build-data": "./build/index.mjs",
     "storybook": "yarn run tailwind && start-storybook -p 6006",
-    "tailwind": "tailwindcss-cli build ./demo/src/css/src.css -o ./demo/src/css/tailwind.css",
+    "tailwind": "tailwindcss-cli build ./docs/src/css/src.css -o ./docs/src/css/tailwind.css",
     "prepublish": "yarn build"
   },
   "workspaces": [
     "packages/*",
-    "demo"
+    "docs"
   ],
   "devDependencies": {
     "lerna": "^3.22.1",

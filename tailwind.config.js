@@ -1,8 +1,8 @@
 module.exports = {
 	purge: [
-		'./demo/**/*.jsx',
-		'./demo/**/*.js',
-		'./demo/**/*.html',
+		'./docs/**/*.jsx',
+		'./docs/**/*.js',
+		'./docs/**/*.html',
 		'./packages/**/*.jsx',
 	],
 	darkMode: false, // or 'media' or 'class'
