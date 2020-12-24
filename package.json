@@ -1,6 +1,6 @@
 {
   "name": "@internachi/franklin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A universal mailing address input",
   "source": "./src/index.mjs",
   "main": "./dist/franklin.js",
@@ -8,13 +8,12 @@
   "module": "./dist/franklin.mjs",
   "unpkg": "./dist/franklin.umd.js",
   "scripts": {
+    "build": "yarn build-data && NODE_ENV=production yarn bundle",
+    "bundle": "microbundle --jsx React.createElement",
     "build-data": "./build/index.mjs",
-    "tailwind": "tailwindcss-cli build ./css/src.css -o ./css/tailwind.css",
-    "tailwind-prod": "NODE_ENV=production tailwindcss-cli build ./css/src.css -o ./css/prod.css",
-    "build": "microbundle",
     "dev": "microbundle watch",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "tailwind": "tailwindcss-cli build ./css/src.css -o ./css/tailwind.css"
   },
   "repository": "https://github.com/InterNACHI/franklin.git",
   "author": "Chris Morrell <inxilpro@users.noreply.github.com>",
