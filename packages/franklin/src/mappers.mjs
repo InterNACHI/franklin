@@ -30,14 +30,14 @@ const definitions = {
 
 const defaults = {
 	[FIELDS]: {
-		country: 'country',
-		address1: 'address',
-		address2: 'address line 2',
-		administrative_area: 'province',
-		locality: 'city',
-		sublocality: 'suburb',
-		postal_code: 'postal',
-		sorting_code: 'sorting code',
+		country: 'Country',
+		address1: 'Address',
+		address2: 'Address Line 2',
+		administrative_area: 'Province',
+		locality: 'City',
+		sublocality: 'Suburb',
+		postal_code: 'Postal',
+		sorting_code: 'Sorting Code',
 	},
 };
 

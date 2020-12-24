@@ -33,11 +33,21 @@ async function getName(definition) {
 }
 
 function buildLabels(definition) {
+	const format = (label) => {
+		if (!label) {
+			return label;
+		}
+		
+		return label
+			.replace(/_/g, ' ')
+			.replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
+	}
+	
 	return compress({
-		postal_code: definition.zip_name_type,
-		administrative_area: definition.state_name_type,
-		locality: definition.locality_name_type,
-		sublocality: definition.sublocality_name_type,
+		postal_code: format(definition.zip_name_type),
+		administrative_area: format(definition.state_name_type),
+		locality: format(definition.locality_name_type),
+		sublocality: format(definition.sublocality_name_type),
 	}, FIELDS);
 }
 

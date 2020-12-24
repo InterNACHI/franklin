@@ -10,12 +10,12 @@ import expandCountry from '../packages/franklin/src/country.mjs';
 import { COUNTRY, expand, expandFlags, FIELDS } from '../packages/franklin/src/mappers.mjs';
 
 async function run() {
-	const countries = await getCountries();
-	
-	const all_compressed = [], all_expanded = [];
-	
-	for (const country_code of countries) {
-		try {
+	try {
+		let countries = await getCountries();
+		
+		const all_compressed = [], all_expanded = [];
+		
+		for (const country_code of countries) {
 			const country = await getCountry(country_code);
 			
 			const compressed = await country.compress();
@@ -23,26 +23,27 @@ async function run() {
 			
 			all_compressed.push(compressed);
 			all_expanded.push(expanded);
-			
-		} catch (e) {
-			console.error(e);
-			process.exit(1);
 		}
+		
+		all_compressed.sort((a, b) => a[1].localeCompare(b[1]));
+		
+		const expanded_bytes = Buffer.byteLength(JSON.stringify(all_expanded), 'utf8');
+		const expanded_kb = Math.round(expanded_bytes / 1000);
+		
+		const compressed_bytes = Buffer.byteLength(JSON.stringify(all_compressed), 'utf8');
+		const compressed_kb = Math.round(compressed_bytes / 1000);
+		
+		console.log(`Expanded:   ${ expanded_kb } K`);
+		console.log(`Compressed: ${ compressed_kb } K`);
+		console.log('');
+		
+		const filename = write(all_compressed);
+		console.log(`Wrote to ${ filename }`);
+		console.log('');
+	} catch (e) {
+		console.error(e);
+		process.exit(1);
 	}
-	
-	const expanded_bytes = Buffer.byteLength(JSON.stringify(all_expanded), 'utf8');
-	const expanded_kb = Math.round(expanded_bytes / 1000);
-	
-	const compressed_bytes = Buffer.byteLength(JSON.stringify(all_compressed), 'utf8');
-	const compressed_kb = Math.round(compressed_bytes / 1000);
-	
-	console.log(`Expanded:   ${expanded_kb} K`);
-	console.log(`Compressed: ${compressed_kb} K`);
-	console.log('');
-	
-	const filename = write(all_compressed);
-	console.log(`Wrote to ${filename}`);
-	console.log('');
 }
 
 function write(data) {

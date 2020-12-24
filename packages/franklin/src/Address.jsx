@@ -103,7 +103,7 @@ function Input({ name }) {
 	const { labels, required, subdivisions } = country;
 	const id = useId();
 	
-	const label = labels[name].replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
+	const label = labels[name];
 	
 	if ('administrative_area' === name && subdivisions.length) {
 		return <Subdivisions

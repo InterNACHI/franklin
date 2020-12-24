@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "deploy": "lerna run deploy",
     "dev": "lerna run dev --parallel",
     "build": "yarn run build-data && lerna run build --parallel",
     "build-data": "./build/index.mjs",
