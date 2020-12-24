@@ -9,15 +9,30 @@ async function run() {
 	// const CA = await getCountry('CA');
 	// console.log(CA);
 	
-	const compressed = compress({
-		'locality': 'City',
+	const input = {
+		locality: 'City',
 		administrative_area: 'Province',
-		postal: 'Zip',
-		'sublocality': 'Suburb!',
-	}, 'labels');
+		postal: 'Postal Code',
+		sublocality: 'Suburb',
+	};
 	
+	const compressed = compress(input, 'labels');
+	
+	console.log('');
+	console.log('Input:');
+	console.log('');
+	console.log(input);
+	
+	console.log('');
+	console.log('Compressed:');
+	console.log('');
 	console.log(compressed);
+	
+	console.log('');
+	console.log('Extracted:');
+	console.log('');
 	console.log(extract(compressed, 'labels'));
+	console.log('');
 	
 	// "zip_name_type": "postal",
 	// "state_name_type": "province",

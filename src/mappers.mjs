@@ -1,10 +1,10 @@
 
 const definitions = {
 	labels: [
+		'postal',
 		'administrative_area',
 		'locality',
 		'sublocality',
-		'postal',
 	],
 	fields: [
 		'country',

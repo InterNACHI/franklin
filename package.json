@@ -1,0 +1,22 @@
+{
+  "name": "@internachi/franklin",
+  "version": "0.0.1",
+  "description": "A universal mailing address input",
+  "type": "module",
+  "source": "./src/index.mjs",
+  "main": "./dist/franklin.js",
+  "exports": "./dist/franklin.modern.js",
+  "module": "./dist/franklin.mjs",
+  "unpkg": "./dist/franklin.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "repository": "https://github.com/InterNACHI/franklin.git",
+  "author": "Chris Morrell <inxilpro@users.noreply.github.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "microbundle": "^0.13.0"
+  }
+}
