@@ -1,6 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import data from './data.json';
 import expandCountry from './country.mjs';
+import { useId } from './useId.mjs';
+
+// TODO:
+//  - Allow for "common countries" so you can put your most common countries at top of list
+//  - Controlled / uncontrolled inputs
+//  - More styling control at an input-by-input level
+//  - Explore wrapping in web component / jQuery plugin
+//  - Allow passing IDs
+//  - Validation
 
 const defaultClassNames = {
 	container: '',
@@ -29,32 +38,49 @@ export function Address(props) {
 	
 	classNames = { ...defaultClassNames, ...classNames };
 	
+	const id = useId();
 	const [countryCode, setCountryCode] = useState(defaultCountry);
 	const country = countries[countryCode];
+	
+	const label = country.labels.country.replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
 	
 	return (
 		<AddressContext.Provider value={ { country, classNames } }>
 			<div className={ classNames.container } style={ { boxSizing: 'border-box' } }>
-				<select className={ classNames.select } value={ countryCode } onChange={ e => setCountryCode(e.target.value) }>
-					{ Object.values(countries).map(country => (
-						<option className={ classNames.option } key={ country.code } value={ country.code }>
-							{ country.name }
-						</option>
-					)) }
-				</select>
-				<Grid grid={ country.grid } />
-				{/*<pre>{ JSON.stringify(country, null, 2) }</pre>*/}
+				<div className={ classNames.grid }>
+					<div className={ classNames.gridRow }>
+						<div className={ classNames.gridColumn }>
+							
+							<label className={ classNames.label } htmlFor={ id }>
+								{ label }
+							</label>
+							
+							<select id={ id } className={ classNames.select } value={ countryCode } onChange={ e => setCountryCode(e.target.value) }>
+								{ Object.values(countries).map(country => (
+									<option className={ classNames.option } key={ country.code } value={ country.code }>
+										{ country.name }
+									</option>
+								)) }
+							</select>
+						
+						</div>
+					</div>
+					
+					<Grid grid={ country.grid } />
+				
+				</div>
+				
+				{/*<pre>{ JSON.stringify(country, null, 2) }</pre>*/ }
 			</div>
 		</AddressContext.Provider>
 	);
 }
 
 function Grid({ grid }) {
-	const { classNames } = useContext(AddressContext);
 	return (
-		<div className={ classNames.grid }>
+		<Fragment>
 			{ grid.map(row => <GridRow row={ row } />) }
-		</div>
+		</Fragment>
 	);
 }
 
@@ -75,7 +101,7 @@ function GridRow({ row }) {
 function Input({ name }) {
 	const { country, classNames } = useContext(AddressContext);
 	const { labels, required, subdivisions } = country;
-	const id = `input-${ name }`; // FIXME
+	const id = useId();
 	
 	const label = labels[name].replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
 	
@@ -100,6 +126,7 @@ function Input({ name }) {
 				id={ id }
 				autoCorrect="off"
 				autoComplete={ autoComplete(name) }
+				spellCheck="false"
 				required={ required[name] }
 				aria-required={ required[name] }
 				key={ name }
@@ -112,6 +139,7 @@ function Input({ name }) {
 
 function Subdivisions({ id, name, label, required, subdivisions }) {
 	const { classNames } = useContext(AddressContext);
+	// const [value, setValue] = useState(required ? Object.keys(subdivisions)[0] : '');
 	
 	return (
 		<div className={ classNames.gridColumn }>
@@ -120,6 +148,8 @@ function Subdivisions({ id, name, label, required, subdivisions }) {
 				{ required ? '*' : '' }
 			</label>
 			<select
+				// value={ value }
+				// onChange={ e => setValue(e.target.value) }
 				className={ classNames.select }
 				id={ id }
 				autoCorrect="off"
@@ -129,6 +159,11 @@ function Subdivisions({ id, name, label, required, subdivisions }) {
 				key={ name }
 				name={ name }
 			>
+				{ false === required && (
+					<option style={ { color: 'rgba(0, 0, 0, 0.3)' } } className={ classNames.option } value="">
+						
+					</option>
+				) }
 				{ subdivisions.map(subdivision => (
 					<option className={ classNames.option } value={ subdivision.code } key={ subdivision.code }>
 						{ subdivision.name }
