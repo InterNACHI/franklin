@@ -21,7 +21,7 @@ const countries = data.reduce((data, compressed) => {
 
 const AddressContext = React.createContext({});
 
-export default function Address(props) {
+export function Address(props) {
 	let {
 		defaultCountry = 'US',
 		classNames = {},
@@ -43,6 +43,7 @@ export default function Address(props) {
 					)) }
 				</select>
 				<Grid grid={ country.grid } />
+				{/*<pre>{ JSON.stringify(country, null, 2) }</pre>*/}
 			</div>
 		</AddressContext.Provider>
 	);
@@ -76,21 +77,64 @@ function Input({ name }) {
 	const { labels, required, subdivisions } = country;
 	const id = `input-${ name }`; // FIXME
 	
+	const label = labels[name].replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
+	
+	if ('administrative_area' === name && subdivisions.length) {
+		return <Subdivisions
+			id={ id }
+			label={ label }
+			name={ name }
+			required={ required[name] }
+			subdivisions={ subdivisions }
+		/>;
+	}
+	
 	return (
 		<div className={ classNames.gridColumn }>
-				<label className={ classNames.label } htmlFor={ id }>
-					{ labels[name] }
-				</label>
-				<input
-					className={ classNames.input }
-					id={ id }
-					autoCorrect="off"
-					autoComplete={ autoComplete(name) }
-					style={ { width: '100%' } }
-					key={ name }
-					name={ name }
-					type="text"
-				/>
+			<label className={ classNames.label } htmlFor={ id }>
+				{ label }
+				{ required[name] ? '*' : '' }
+			</label>
+			<input
+				className={ classNames.input }
+				id={ id }
+				autoCorrect="off"
+				autoComplete={ autoComplete(name) }
+				required={ required[name] }
+				aria-required={ required[name] }
+				key={ name }
+				name={ name }
+				type="text"
+			/>
+		</div>
+	);
+}
+
+function Subdivisions({ id, name, label, required, subdivisions }) {
+	const { classNames } = useContext(AddressContext);
+	
+	return (
+		<div className={ classNames.gridColumn }>
+			<label className={ classNames.label } htmlFor={ id }>
+				{ label }
+				{ required ? '*' : '' }
+			</label>
+			<select
+				className={ classNames.select }
+				id={ id }
+				autoCorrect="off"
+				autoComplete={ autoComplete(name) }
+				required={ required }
+				aria-required={ required }
+				key={ name }
+				name={ name }
+			>
+				{ subdivisions.map(subdivision => (
+					<option className={ classNames.option } value={ subdivision.code } key={ subdivision.code }>
+						{ subdivision.name }
+					</option>
+				)) }
+			</select>
 		</div>
 	);
 }

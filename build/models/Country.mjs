@@ -34,7 +34,7 @@ async function getName(definition) {
 
 function buildLabels(definition) {
 	return compress({
-		sorting_code: definition.zip_name_type,
+		postal_code: definition.zip_name_type,
 		administrative_area: definition.state_name_type,
 		locality: definition.locality_name_type,
 		sublocality: definition.sublocality_name_type,
