@@ -1,3 +1,4 @@
+import { compress, SUBDIVISION } from '../../src/mappers.mjs';
 
 export default class Subdivision
 {
@@ -7,10 +8,10 @@ export default class Subdivision
 		this.postal_pattern = postal_pattern;
 	}
 	
-	export() {
-		return [
-			this.key,
-			this.key === this.name ? null : this.name,
-		];
+	compress() {
+		return compress({
+			code: this.key,
+			name: this.name,
+		}, SUBDIVISION);
 	}
 }

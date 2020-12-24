@@ -1,5 +1,6 @@
 import Subdivision from './Subdivision.mjs';
 import getTerritories from '../get-territories.mjs';
+import { compress, compressFlags, COUNTRY, FIELDS, LABELS } from '../../src/mappers.mjs';
 
 // 	"id": "data/ZZ",
 // 	"fmt": "%N%n%O%n%A%n%C",
@@ -20,13 +21,15 @@ export default class Country
 		});
 	}
 	
-	export() {
-		return [
-			this.key,
-			this.name,
-			this.grid,
-			this.subdivisions.map(subdivision => subdivision.export()),
-		];
+	compress() {
+		return compress({
+			code: this.key,
+			name: this.name,
+			grid: this.grid.map(row => compressFlags(row, FIELDS)),
+			labels: compress({}, LABELS),
+			required: [],
+			subdivisions: this.subdivisions.map(subdivision => subdivision.compress()),
+		}, COUNTRY);
 	}
 }
 
@@ -58,11 +61,21 @@ function buildGrid(definition) {
 	const extractor = /%([a-z])/gi;
 	
 	definition.grid = [...definition.fmt.matchAll(extractor)]
-		.map(([_, token]) => 'n' === token ? '|' : token)
-		.filter(token => 'S' !== token && 'O' !== token)
-		.join('')
-		.replace(/\|{2,}/g, '|')
-		.split('|');
+		.reduce((grid, [_, char]) => {
+			const name = fieldName(char);
+			
+			if ('n' === char) {
+				grid.push({});
+			} else if ('address' === name) {
+				grid[grid.length - 1].address1 = true;
+				grid[grid.length - 1].address2 = true;
+			} else if (name) {
+				grid[grid.length - 1][name] = true;
+			}
+			
+			return grid;
+		}, [{}])
+		.filter(row => Object.keys(row).length);
 	
 	return definition;
 }
@@ -120,6 +133,26 @@ function expandLists(definition) {
 	}
 	
 	return definition;
+}
+
+function fieldName(char) {
+	const fields = {
+		'R': 'country',
+		'1': 'address1',
+		'2': 'address2',
+		'A': 'address',
+		'S': 'admin_area',
+		'C': 'locality',
+		'D': 'dependent_locality',
+		'Z': 'postal_code',
+		'X': 'sorting_code',
+	};
+	
+	if (char in fields) {
+		return fields[char];
+	}
+	
+	return false;
 }
 
 function extract(country, key) {
@@ -208,3 +241,14 @@ function getDefaultWidthType(field) {
 
 // sub_keys always holds the "value", and sometimes the label. If sub_names exists,
 // then we use that.
+
+
+// "zip_name_type": "postal",
+// "state_name_type": "province",
+// "locality_name_type": "city",
+// "sublocality_name_type": "suburb"
+
+// 'administrative_area',
+// 		'locality',
+// 		'sublocality',
+// 		'postal',
