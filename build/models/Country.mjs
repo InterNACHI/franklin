@@ -1,66 +1,48 @@
-import Subdivision from './Subdivision.mjs';
 import getTerritories from '../get-territories.mjs';
-import { compress, compressFlags, COUNTRY, FIELDS, LABELS } from '../../src/mappers.mjs';
-
-// 	"id": "data/ZZ",
-// 	"fmt": "%N%n%O%n%A%n%C",
-// 	"require": "AC",
-// 	"upper": "C",
-// 	"zip_name_type": "postal",
-// 	"state_name_type": "province",
-// 	"locality_name_type": "city",
-// 	"sublocality_name_type": "suburb"
+import { compress, compressFlags, COUNTRY, expand, expandFlags, FIELDS, LABELS, SUBDIVISION } from '../../src/mappers.mjs';
 
 let territories = null;
 
-export default class Country
-{
+export default class Country {
 	constructor(definition) {
-		Object.entries(normalize(definition)).forEach(([key, value]) => {
-			this[key] = value;
-		});
+		this.definition = normalize(definition);
 	}
 	
-	compress() {
+	async compress() {
 		return compress({
-			code: this.key,
-			name: this.name,
-			grid: this.grid.map(row => compressFlags(row, FIELDS)),
-			labels: compress({}, LABELS),
-			required: [],
-			subdivisions: this.subdivisions.map(subdivision => subdivision.compress()),
+			code: this.definition.key,
+			name: await getName(this.definition),
+			grid: buildGrid(this.definition),
+			labels: buildLabels(this.definition),
+			required: buildRequired(this.definition),
+			subdivisions: buildSubdivisions(this.definition),
 		}, COUNTRY);
 	}
 }
 
-export async function loadTerritories() {
+async function getName(definition) {
 	if (null === territories) {
 		territories = await getTerritories();
 	}
-}
-
-function normalize(definition) {
-	definition = setProperName(definition);
-	definition = expandLists(definition);
-	definition = buildRegularExpressions(definition);
-	definition = buildSubdivisions(definition);
-	definition = buildGrid(definition);
 	
-	return definition;
-}
-
-function setProperName(definition) {
 	if (definition.key in territories) {
-		definition.name = territories[definition.key];
+		return territories[definition.key];
 	}
 	
-	return definition;
+	return definition.name;
+}
+
+function buildLabels(definition) {
+	return compress({
+		postal: definition.zip_name_type,
+		administrative_area: definition.state_name_type,
+		locality: definition.locality_name_type,
+		sublocality: definition.sublocality_name_type,
+	}, LABELS);
 }
 
 function buildGrid(definition) {
-	const extractor = /%([a-z])/gi;
-	
-	definition.grid = [...definition.fmt.matchAll(extractor)]
+	return [...definition.fmt.matchAll(/%([a-z])/gi)]
 		.reduce((grid, [_, char]) => {
 			const name = fieldName(char);
 			
@@ -75,46 +57,45 @@ function buildGrid(definition) {
 			
 			return grid;
 		}, [{}])
-		.filter(row => Object.keys(row).length);
-	
-	return definition;
+		.filter(row => Object.keys(row).length)
+		.map(row => compressFlags(row, FIELDS));
 }
 
-function buildSubdivisions(original) {
+function buildRequired(definition) {
+	if (!('require' in definition)) {
+		return 0;
+	}
+	
+	const required = definition.require.split('')
+		.reduce((required, char) => {
+			const name = fieldName(char);
+			if (name) {
+				required[name] = true;
+			}
+			return required;
+		}, {});
+	
+	return compressFlags(required, FIELDS);
+}
+
+function buildSubdivisions(definition) {
 	// Extract data
-	let { sub_keys = null, sub_names = [], sub_zips = [], ...definition } = original;
+	const { sub_keys = null, sub_names = [] } = definition;
 	
-	// Set up default
-	definition.subdivisions = [];
-	
-	if (null !== sub_keys) {
-		definition.subdivisions = sub_keys.map((key, index) => {
-			const name = ('undefined' !== typeof sub_names[index])
-				? sub_names[index]
-				: null;
-			
-			const postal_pattern = ('undefined' !== typeof sub_zips[index])
-				? new RegExp(`^${ sub_zips[index] }`, 'i')
-				: null;
-			
-			return new Subdivision(key, name, postal_pattern);
-		});
+	if (null === sub_keys) {
+		return [];
 	}
 	
-	return definition;
+	return sub_keys.map((code, index) => {
+		const name = 'undefined' !== typeof sub_names[index] && sub_names[index] !== sub_keys[index]
+			? sub_names[index]
+			: null;
+		
+		return compress({ code, name }, SUBDIVISION);
+	});
 }
 
-function buildRegularExpressions(definition) {
-	if (!('zip' in definition)) {
-		definition.zip = '.*';
-	}
-	
-	definition.zip = new RegExp(`^${definition.zip}$`, 'i');
-	
-	return definition;
-}
-
-function expandLists(definition) {
+function normalize(definition) {
 	const lists = [
 		'sub_keys',
 		'sub_names',
@@ -155,79 +136,79 @@ function fieldName(char) {
 	return false;
 }
 
-function extract(country, key) {
-	switch (key) {
-		case 'fmt':
-			// Get format
-			break;
-		
-		case 'lfmt':
-			// The latin format string used when a country defines an alternative format for
-			// use with the latin script, such as in China.
-			break;
-		
-		case 'lang':
-			// Default language
-			break;
-		
-		case 'languages':
-			// List of all languages
-			// Separated by ~
-			break;
-		
-		case 'state_name_type':
-			// Name for admin area / state
-			break;
-		
-		case 'locality_name_type':
-			// Name for locality / city
-			break;
-		
-		case 'sublocality_name_type':
-			// Name for sub-locality
-			break;
-		
-		case 'zip_name_type':
-			break;
-		
-		case 'require':
-			// Which fields are required
-			break;
-		
-		case 'width_overrides':
-			// Isn't in use at top-level. We'll have to see what happens with nested levels.
-			break;
-	}
-}
-
-const NEW_LINE = "%n";
-
-const fieldWidths = {
-	SHORT: 'SHORT', // "S" and "N" (eventually maybe narrow)
-	LONG: 'LONG', // "L"
-};
-
-const fields = {
-	COUNTRY: 'R',
-	ADDRESS_LINE_1: '1',
-	ADDRESS_LINE_2: '2',
-	STREET_ADDRESS: 'A',
-	ADMIN_AREA: 'S',
-	LOCALITY: 'C',
-	DEPENDENT_LOCALITY: 'D',
-	POSTAL_CODE: 'Z',
-	SORTING_CODE: 'X',
-	RECIPIENT: 'N',
-	ORGANIZATION: 'O',
-};
-
-function getDefaultWidthType(field) {
-	if (field === fields.POSTAL_CODE || field === fields.SORTING_CODE) {
-		return fieldWidths.SHORT;
-	}
-	
-	return fieldWidths.LONG;
-}
+// function extract(country, key) {
+// 	switch (key) {
+// 		case 'fmt':
+// 			// Get format
+// 			break;
+//		
+// 		case 'lfmt':
+// 			// The latin format string used when a country defines an alternative format for
+// 			// use with the latin script, such as in China.
+// 			break;
+//		
+// 		case 'lang':
+// 			// Default language
+// 			break;
+//		
+// 		case 'languages':
+// 			// List of all languages
+// 			// Separated by ~
+// 			break;
+//		
+// 		case 'state_name_type':
+// 			// Name for admin area / state
+// 			break;
+//		
+// 		case 'locality_name_type':
+// 			// Name for locality / city
+// 			break;
+//		
+// 		case 'sublocality_name_type':
+// 			// Name for sub-locality
+// 			break;
+//		
+// 		case 'zip_name_type':
+// 			break;
+//		
+// 		case 'require':
+// 			// Which fields are required
+// 			break;
+//		
+// 		case 'width_overrides':
+// 			// Isn't in use at top-level. We'll have to see what happens with nested levels.
+// 			break;
+// 	}
+// }
+//
+// const NEW_LINE = "%n";
+//
+// const fieldWidths = {
+// 	SHORT: 'SHORT', // "S" and "N" (eventually maybe narrow)
+// 	LONG: 'LONG', // "L"
+// };
+//
+// const fields = {
+// 	COUNTRY: 'R',
+// 	ADDRESS_LINE_1: '1',
+// 	ADDRESS_LINE_2: '2',
+// 	STREET_ADDRESS: 'A',
+// 	ADMIN_AREA: 'S',
+// 	LOCALITY: 'C',
+// 	DEPENDENT_LOCALITY: 'D',
+// 	POSTAL_CODE: 'Z',
+// 	SORTING_CODE: 'X',
+// 	RECIPIENT: 'N',
+// 	ORGANIZATION: 'O',
+// };
+//
+// function getDefaultWidthType(field) {
+// 	if (field === fields.POSTAL_CODE || field === fields.SORTING_CODE) {
+// 		return fieldWidths.SHORT;
+// 	}
+//	
+// 	return fieldWidths.LONG;
+// }
 
 // AddressField.STREET_ADDRESS gets converted on-the-fly to ADDRESS_LINE_1 and ADDRESS_LINE_2
 // "require" is set to the keys that are required, i.e. "ACSZ" for US (Address, Locality, Admin Area, Postal)

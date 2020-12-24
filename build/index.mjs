@@ -1,9 +1,13 @@
 #!/usr/bin/env node --no-warnings
 
 import { Buffer } from 'buffer';
+import { writeFileSync } from 'fs';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import getCountries from './get-countries.mjs';
 import getCountry from './get-country.mjs';
-import { COUNTRY, expand, expandFlags, FIELDS } from '../src/mappers.mjs';
+import expandCountry from '../src/country.mjs';
+import { COUNTRY, expand, expandFlags, FIELDS, LABELS } from '../src/mappers.mjs';
 
 async function run() {
 	const countries = await getCountries();
@@ -13,15 +17,16 @@ async function run() {
 	for (const country_code of countries) {
 		try {
 			const country = await getCountry(country_code);
-			const compressed = country.compress();
-			const expanded = expand(compressed, COUNTRY);
-			expanded.grid = expanded.grid.map(row => expandFlags(row, FIELDS));
+			
+			const compressed = await country.compress();
+			const expanded = expandCountry(compressed);
 			
 			all_compressed.push(compressed);
 			all_expanded.push(expanded);
 			
 		} catch (e) {
 			console.error(e);
+			process.exit(1);
 		}
 	}
 	
@@ -31,12 +36,21 @@ async function run() {
 	const compressed_bytes = Buffer.byteLength(JSON.stringify(all_compressed), 'utf8');
 	const compressed_kb = Math.round(compressed_bytes / 1000);
 	
-	console.log(JSON.stringify(all_compressed));
-	console.log('');
-	
 	console.log(`Expanded:   ${expanded_kb} K`);
 	console.log(`Compressed: ${compressed_kb} K`);
 	console.log('');
+	
+	const filename = write(all_compressed);
+	console.log(`Wrote to ${filename}`);
+	console.log('');
+}
+
+function write(data) {
+	const filename = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'src', `data.json`);
+	
+	writeFileSync(filename, JSON.stringify(data));
+	
+	return filename;
 }
 
 // What we need:

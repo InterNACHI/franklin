@@ -9,6 +9,7 @@
   "module": "./dist/franklin.mjs",
   "unpkg": "./dist/franklin.umd.js",
   "scripts": {
+    "build-data": "./build/index.mjs",
     "build": "microbundle",
     "dev": "microbundle watch"
   },

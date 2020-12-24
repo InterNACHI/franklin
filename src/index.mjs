@@ -1,1 +1,4 @@
-console.log('Coming soon...');
+import { expand, expandFlags } from './mappers.mjs';
+
+window.expand = expand;
+window.expandFlags = expandFlags;

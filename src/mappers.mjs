@@ -36,10 +36,10 @@ const definitions = {
 
 const defaults = {
 	[LABELS]: {
-		administrative_area: 'State',
-		locality: 'City',
-		sublocality: 'Suburb',
-		postal: 'Zip',
+		administrative_area: 'province',
+		locality: 'city',
+		sublocality: 'suburb',
+		postal: 'postal',
 	},
 };
 
