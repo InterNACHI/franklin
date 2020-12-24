@@ -1,43 +1,31 @@
 {
-  "name": "@internachi/franklin",
+  "name": "@internachi/franklin-monorepo",
   "version": "0.0.3",
-  "description": "A universal mailing address input",
-  "source": "./src/index.mjs",
-  "main": "./dist/franklin.js",
-  "exports": "./dist/franklin.modern.js",
-  "module": "./dist/franklin.mjs",
-  "unpkg": "./dist/franklin.umd.js",
-  "scripts": {
-    "build": "yarn build-data && NODE_ENV=production yarn bundle",
-    "bundle": "microbundle --jsx React.createElement",
-    "build-data": "./build/index.mjs",
-    "dev": "microbundle watch",
-    "storybook": "start-storybook -p 6006",
-    "tailwind": "tailwindcss-cli build ./css/src.css -o ./css/tailwind.css"
-  },
   "repository": "https://github.com/InterNACHI/franklin.git",
-  "author": "Chris Morrell <inxilpro@users.noreply.github.com>",
   "license": "MIT",
-  "private": false,
+  "private": true,
+  "scripts": {
+    "dev": "lerna run dev --parallel",
+    "build": "yarn run build-data && lerna run build --parallel",
+    "build-data": "./build/index.mjs",
+    "storybook": "yarn run tailwind && start-storybook -p 6006",
+    "tailwind": "tailwindcss-cli build ./demo/src/css/src.css -o ./demo/src/css/tailwind.css"
+  },
+  "workspaces": [
+    "packages/*",
+    "demo"
+  ],
   "devDependencies": {
-    "@babel/core": "^7.12.10",
+    "lerna": "^3.22.1",
+    "microbundle": "^0.13.0",
     "@storybook/addon-actions": "^6.1.11",
     "@storybook/addon-essentials": "^6.1.11",
     "@storybook/addon-links": "^6.1.11",
     "@storybook/react": "^6.1.11",
     "@tailwindcss/forms": "^0.2.1",
     "autoprefixer": "^10.1.0",
-    "babel-loader": "^8.2.2",
-    "microbundle": "^0.13.0",
     "postcss": "^8.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
     "tailwindcss": "^2.0.2",
     "tailwindcss-cli": "^0.1.2"
-  },
-  "dependencies": {},
-  "peerDependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
   }
 }

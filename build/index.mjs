@@ -6,8 +6,8 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import getCountries from './get-countries.mjs';
 import getCountry from './get-country.mjs';
-import expandCountry from '../src/country.mjs';
-import { COUNTRY, expand, expandFlags, FIELDS } from '../src/mappers.mjs';
+import expandCountry from '../packages/franklin/src/country.mjs';
+import { COUNTRY, expand, expandFlags, FIELDS } from '../packages/franklin/src/mappers.mjs';
 
 async function run() {
 	const countries = await getCountries();
@@ -46,7 +46,7 @@ async function run() {
 }
 
 function write(data) {
-	const filename = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'src', `data.json`);
+	const filename = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'franklin', `data.json`);
 	
 	writeFileSync(filename, JSON.stringify(data));
 	

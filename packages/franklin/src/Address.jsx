@@ -1,5 +1,5 @@
 import React, { Fragment, useContext, useState } from 'react';
-import data from './data.json';
+import data from '../data.json';
 import expandCountry from './country.mjs';
 import { useId } from './useId.mjs';
 

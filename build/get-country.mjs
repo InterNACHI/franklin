@@ -1,5 +1,5 @@
 import get from './get.mjs';
-import Country from './models/Country.mjs';
+import Country from './Country.mjs';
 
 let defaults = null;
 

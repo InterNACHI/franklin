@@ -1,5 +1,5 @@
-import getTerritories from '../get-territories.mjs';
-import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '../../src/mappers.mjs';
+import getTerritories from './get-territories.mjs';
+import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '../packages/franklin/src/mappers.mjs';
 
 let territories = null;
 
