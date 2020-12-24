@@ -1,6 +1,6 @@
 {
   "name": "@internachi/franklin-monorepo",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "https://github.com/InterNACHI/franklin.git",
   "license": "MIT",
   "private": true,
