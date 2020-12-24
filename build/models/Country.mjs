@@ -1,5 +1,5 @@
 import getTerritories from '../get-territories.mjs';
-import { compress, compressFlags, COUNTRY, expand, expandFlags, FIELDS, LABELS, SUBDIVISION } from '../../src/mappers.mjs';
+import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '../../src/mappers.mjs';
 
 let territories = null;
 
@@ -34,11 +34,11 @@ async function getName(definition) {
 
 function buildLabels(definition) {
 	return compress({
-		postal: definition.zip_name_type,
+		sorting_code: definition.zip_name_type,
 		administrative_area: definition.state_name_type,
 		locality: definition.locality_name_type,
 		sublocality: definition.sublocality_name_type,
-	}, LABELS);
+	}, FIELDS);
 }
 
 function buildGrid(definition) {
@@ -123,9 +123,9 @@ function fieldName(char) {
 		'1': 'address1',
 		'2': 'address2',
 		'A': 'address',
-		'S': 'admin_area',
+		'S': 'administrative_area',
 		'C': 'locality',
-		'D': 'dependent_locality',
+		'D': 'sublocality',
 		'Z': 'postal_code',
 		'X': 'sorting_code',
 	};

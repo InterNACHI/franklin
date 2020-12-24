@@ -1,0 +1,20 @@
+import { Meta, Story } from '@storybook/addon-docs/blocks';
+import Address from './Address.jsx';
+
+<Meta title="Address" />
+
+# Address Input
+
+<Story name="Primary">
+	<Address
+		classNames={ {
+			container: 'antialiased',
+			select: 'block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50',
+			grid: 'space-y-2 my-4',
+			gridRow: 'flex space-x-2',
+			gridColumn: 'flex-1',
+			label: 'block',
+			input: 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50',
+		} }
+	/>
+</Story>

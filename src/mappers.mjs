@@ -4,19 +4,13 @@ export const COUNTRY = 3;
 export const SUBDIVISION = 4;
 
 const definitions = {
-	[LABELS]: [
-		'postal',
-		'administrative_area',
-		'locality',
-		'sublocality',
-	],
 	[FIELDS]: [
 		'country',
 		'address1',
 		'address2',
-		'admin_area',
+		'administrative_area',
 		'locality',
-		'dependent_locality',
+		'sublocality',
 		'postal_code',
 		'sorting_code',
 	],
@@ -35,11 +29,15 @@ const definitions = {
 };
 
 const defaults = {
-	[LABELS]: {
+	[FIELDS]: {
+		country: 'country',
+		address1: 'address',
+		address2: 'address line 2',
 		administrative_area: 'province',
 		locality: 'city',
 		sublocality: 'suburb',
-		postal: 'postal',
+		postal_code: 'postal',
+		sorting_code: 'sorting code',
 	},
 };
 
