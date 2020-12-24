@@ -11,8 +11,8 @@ async function run() {
 	
 	const compressed = compress({
 		'locality': 'City',
-		administrative_area: 'State',
-		postal: 'Zip',
+		administrative_area: 'Province',
+		postal: 'Postal Code',
 		'sublocality': 'Suburb',
 	}, 'labels');
 	

@@ -18,13 +18,30 @@ const definitions = {
 	],
 };
 
+const defaults = {
+	labels: {
+		administrative_area: 'State',
+		locality: 'City',
+		sublocality: 'Suburb',
+		postal: 'Zip',
+	},
+};
+
 export function compress(data, kind) {
-	return [...definitions[kind]].map(key => data[key]);
+	return [...definitions[kind]]
+		.map((key, index) => {
+			const value = data[key];
+			return kind in defaults && key in defaults[kind] && value === defaults[kind][key]
+				? 0
+				: value;
+		});
 }
 
 export function extract(data, kind) {
 	return [...definitions[kind]].reduce((carry, key, index) => {
-		carry[key] = data[index];
+		carry[key] = 0 === data[index] && kind in defaults && key in defaults[kind]
+			? defaults[kind][key]
+			: data[index];
 		return carry;
 	}, {});
 }
