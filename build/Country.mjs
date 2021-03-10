@@ -1,5 +1,5 @@
 import getTerritories from './get-territories.mjs';
-import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '@internachi/franklin/src/helpers/mappers.mjs';
+import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '@internachi/franklin/helpers/mappers';
 
 let territories = null;
 

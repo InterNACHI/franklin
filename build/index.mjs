@@ -6,8 +6,8 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import getCountries from './get-countries.mjs';
 import getCountry from './get-country.mjs';
-import expandCountry from '@internachi/franklin/src/expandCountry.mjs';
-import { COUNTRY, expand, expandFlags, FIELDS } from '@internachi/franklin/src/helpers/mappers.mjs';
+import expandCountry from '@internachi/franklin/helpers/expandCountry';
+import { COUNTRY, expand, expandFlags, FIELDS } from '@internachi/franklin/helpers/mappers';
 
 async function run() {
 	try {

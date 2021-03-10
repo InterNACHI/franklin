@@ -1,4 +1,4 @@
-import { Address } from '@internachi/franklin/dist/franklin.js';
+// import { Address } from '@internachi/franklin/dist/franklin.js';
 
 export default function App() {
 	return (
@@ -23,18 +23,22 @@ export default function App() {
 			</div>
 			<div className="md:w-1/2 mx-4 md:mx-0">
 				<div className="bg-white rounded p-8">
-					<Address
-						classNames={ {
-							select: "block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50",
-							grid: "space-y-2",
-							gridRow: "flex space-x-2",
-							gridColumn: "flex-1",
-							label: "block",
-							input: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-						} }
-					/>
+					TODO
 				</div>
 			</div>
 		</div>
 	);
 }
+
+/*
+<Address
+	classNames={ {
+		select: "block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50",
+		grid: "space-y-2",
+		gridRow: "flex space-x-2",
+		gridColumn: "flex-1",
+		label: "block",
+		input: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+	} }
+/>
+*/

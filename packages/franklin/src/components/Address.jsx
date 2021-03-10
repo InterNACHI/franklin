@@ -7,6 +7,7 @@ import DefaultLabel from './DefaultLabel.jsx';
 import createId from '../core/defaults/createId.mjs';
 import DefaultSelect from './DefaultSelect.jsx';
 import DefaultOption from './DefaultOption.jsx';
+import getClassName from '../helpers/getClassName.mjs';
 
 const countries = [...data].reduce((data, compressed) => {
 	const country = expandCountry(compressed);

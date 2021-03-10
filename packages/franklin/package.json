@@ -4,7 +4,11 @@
   "description": "A universal mailing address input",
   "source": "./src/index.mjs",
   "main": "./dist/franklin.js",
-  "exports": "./dist/franklin.modern.js",
+  "exports": {
+    ".": "./dist/franklin.modern.js",
+    "./helpers/expandCountry": "./src/helpers/expandCountry.mjs",
+    "./helpers/mappers": "./src/helpers/mappers.mjs"
+  },
   "module": "./dist/franklin.mjs",
   "unpkg": "./dist/franklin.umd.js",
   "files": [

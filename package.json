@@ -18,14 +18,14 @@
     "docs"
   ],
   "devDependencies": {
-    "lerna": "^3.22.1",
-    "microbundle": "^0.13.0",
     "@storybook/addon-actions": "^6.1.11",
     "@storybook/addon-essentials": "^6.1.11",
     "@storybook/addon-links": "^6.1.11",
     "@storybook/react": "^6.1.11",
     "@tailwindcss/forms": "^0.2.1",
     "autoprefixer": "^10.1.0",
+    "lerna": "^4.0.0",
+    "microbundle": "^0.13.0",
     "postcss": "^8.2.1",
     "tailwindcss": "^2.0.2",
     "tailwindcss-cli": "^0.1.2"
