@@ -1,28 +1,14 @@
 import React, { Fragment, useContext, useState } from 'react';
-import data from '../data.json';
-import expandCountry from './country.mjs';
-import { useId } from './useId.mjs';
+import data from '../../data.json';
+import expandCountry from '../helpers/expandCountry.mjs';
+import { useId } from '../helpers/useId.mjs';
+import Wrapper from './Wrapper.jsx';
+import DefaultLabel from './DefaultLabel.jsx';
+import createId from '../core/defaults/createId.mjs';
+import DefaultSelect from './DefaultSelect.jsx';
+import DefaultOption from './DefaultOption.jsx';
 
-// TODO:
-//  - Allow for "common countries" so you can put your most common countries at top of list
-//  - Controlled / uncontrolled inputs
-//  - More styling control at an input-by-input level
-//  - Explore wrapping in web component / jQuery plugin
-//  - Allow passing IDs
-//  - Validation
-
-const defaultClassNames = {
-	container: '',
-	select: '',
-	option: '',
-	grid: '',
-	gridRow: '',
-	gridColumn: '',
-	label: '',
-	input: '',
-};
-
-const countries = data.reduce((data, compressed) => {
+const countries = [...data].reduce((data, compressed) => {
 	const country = expandCountry(compressed);
 	data[country.code] = country;
 	return data;
@@ -31,51 +17,113 @@ const countries = data.reduce((data, compressed) => {
 const AddressContext = React.createContext({});
 
 export function Address(props) {
-	let {
+	const {
+		name = 'address',
 		defaultCountry = 'US',
-		classNames = {},
+		components = {},
 	} = props;
 	
-	classNames = { ...defaultClassNames, ...classNames };
+	const {
+		grid:Grid = Wrapper,
+		GridRow = Wrapper,
+		GridColumn = Wrapper,
+		Label = DefaultLabel,
+		Select = DefaultSelect,
+		Option = DefaultOption,
+	} = components;
 	
-	const id = useId();
+	const classNames = {
+		grid: getClassName('grid', props),
+		gridRow: getClassName('gridRow', props),
+		gridColumn: getClassName('gridColumn', props),
+		label: getClassName('label', props),
+		select: getClassName('select', props),
+		option: getClassName('option', props),
+		input: getClassName('input', props),
+	};
+	
 	const [countryCode, setCountryCode] = useState(defaultCountry);
 	const country = countries[countryCode];
 	
-	const label = country.labels.country.replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
+	const countryId = createId(name, 'country', 'select');
 	
 	return (
-		<AddressContext.Provider value={ { country, classNames } }>
-			<div className={ classNames.container } style={ { boxSizing: 'border-box' } }>
-				<div className={ classNames.grid }>
-					<div className={ classNames.gridRow }>
-						<div className={ classNames.gridColumn }>
-							
-							<label className={ classNames.label } htmlFor={ id }>
-								{ label }
-							</label>
-							
-							<select id={ id } className={ classNames.select } value={ countryCode } onChange={ e => setCountryCode(e.target.value) }>
-								{ Object.values(countries).map(country => (
-									<option className={ classNames.option } key={ country.code } value={ country.code }>
-										{ country.name }
-									</option>
-								)) }
-							</select>
-						
-						</div>
-					</div>
-					
-					<Grid grid={ country.grid } />
-				
-				</div>
-				
-				{/*<pre>{ JSON.stringify(country, null, 2) }</pre>*/ }
-			</div>
-		</AddressContext.Provider>
+		<Grid className={ classNames.grid }>
+			
+			{/* Country Select Box */ }
+			<GridRow className={ classNames.gridRow }>
+				<SelectColumn
+					GridColumn={ GridColumn }
+					Label={ Label }
+					Select={ Select }
+					classNames={ classNames }
+					name={ `${ name }[country]` }
+					value={ countryCode }
+					options={ Object.values(countries).map(country => ({ label: country.name, value: country.code })) }
+					label={ country.labels.country }
+					required={ true }
+					id={ countryId }
+					onChange={ value => setCountryCode(value) }
+				/>
+			</GridRow>
+			
+			{/* Dynamic Grid */ }
+			{ country.grid.map(row => (
+				<GridRow className={ classNames.gridRow }>
+					<GridColumn className={ classNames.gridColumn }>
+					</GridColumn>
+				</GridRow>
+			)) }
+		</Grid>
 	);
 }
 
+function SelectColumn(props) {
+	const {
+		GridColumn,
+		Label,
+		Select,
+		classNames,
+		name,
+		value,
+		label,
+		id,
+		required,
+		onChange,
+		options,
+	} = props;
+	
+	return (
+		<GridColumn className={ classNames.gridColumn }>
+			<Label
+				label={ label }
+				required={ required }
+				labelProps={ { htmlFor: id } }
+				className={ classNames.label }
+			/>
+			<Select
+				selectProps={ {
+					id: id,
+					value: value,
+					name: name,
+					onChange: e => onChange(e.target.value),
+				} }
+				className={ classNames.select }
+			>
+				{ Object.values(options).map(option =>
+					<Option
+						key={ option.value }
+						optionProps={ { value } }
+						className={ classNames.option }
+						label={ option.label }
+					/>
+				) }
+			</Select>
+		</GridColumn>
+	);
+}
+
+/*
 function Grid({ grid }) {
 	return (
 		<Fragment>
@@ -160,19 +208,22 @@ function Subdivisions({ id, name, label, required, subdivisions }) {
 				name={ name }
 			>
 				{ false === required && (
-					<option style={ { color: 'rgba(0, 0, 0, 0.3)' } } className={ classNames.option } value="">
-						
-					</option>
+					<option
+						style={ { color: 'rgba(0, 0, 0, 0.3)' } }
+						className={ classNames.option } value=""
+					/>
 				) }
 				{ subdivisions.map(subdivision => (
 					<option className={ classNames.option } value={ subdivision.code } key={ subdivision.code }>
 						{ subdivision.name }
+						{ subdivision.latinName ? ` (${ subdivision.latinName })` : null }
 					</option>
 				)) }
 			</select>
 		</div>
 	);
 }
+*/
 
 function autoComplete(name) {
 	const defaults = {
@@ -183,7 +234,7 @@ function autoComplete(name) {
 		locality: 'address-level2',
 		sublocality: 'address-level3',
 		postal_code: 'postal-code',
-		sorting_code: 'address-level4', // FIXME
+		sorting_code: 'address-level4', // TODO: Verify that sorting code maps to level 4
 	};
 	
 	if (name in defaults) {

@@ -1,1 +1,1 @@
-export { Address } from './Address.jsx';
+export { Address } from './components/Address.jsx';

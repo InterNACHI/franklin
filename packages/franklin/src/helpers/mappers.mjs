@@ -25,6 +25,7 @@ const definitions = {
 	[SUBDIVISION]: [
 		'code',
 		'name',
+		'latinName',
 	],
 };
 

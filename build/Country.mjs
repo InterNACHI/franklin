@@ -1,5 +1,5 @@
 import getTerritories from './get-territories.mjs';
-import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '../packages/franklin/src/mappers.mjs';
+import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '@internachi/franklin/src/helpers/mappers.mjs';
 
 let territories = null;
 
@@ -40,7 +40,7 @@ function buildLabels(definition) {
 		
 		return label
 			.replace(/_/g, ' ')
-			.replace(/(?:^|\s)(\w{1})/g, letter => letter.toUpperCase());
+			.replace(/(?:^|\s)(\w)/g, letter => letter.toUpperCase());
 	}
 	
 	return compress({
@@ -91,7 +91,7 @@ function buildRequired(definition) {
 
 function buildSubdivisions(definition) {
 	// Extract data
-	const { sub_keys = null, sub_names = [] } = definition;
+	const { sub_keys = null, sub_names = [], sub_lnames = [] } = definition;
 	
 	if (null === sub_keys) {
 		return [];
@@ -102,7 +102,11 @@ function buildSubdivisions(definition) {
 			? sub_names[index]
 			: null;
 		
-		return compress({ code, name }, SUBDIVISION);
+		const latinName = 'undefined' !== typeof sub_lnames[index] && sub_lnames[index] !== sub_names[index]
+			? sub_lnames[index]
+			: null;
+		
+		return compress({ code, name, latinName }, SUBDIVISION);
 	});
 }
 

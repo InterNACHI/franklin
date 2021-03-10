@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useLayoutEffect, useEffect } from 'react';
 
 // Adapted from https://github.com/reach/reach-ui
 
@@ -10,11 +10,11 @@ const genId = () => ++id;
 export function useId(idFromProps) {
 	const initialId = idFromProps || (serverHandoffComplete ? genId() : null);
 	
-	const [id, setId] = React.useState(initialId);
+	const [id, setId] = useState(initialId);
 	
 	const useIsomorphicLayoutEffect = canUseDOM()
-		? React.useLayoutEffect
-		: React.useEffect;
+		? useLayoutEffect
+		: useEffect;
 	
 	useIsomorphicLayoutEffect(() => {
 		if (null === id) {
@@ -22,7 +22,7 @@ export function useId(idFromProps) {
 		}
 	}, []);
 	
-	React.useEffect(() => {
+	useEffect(() => {
 		serverHandoffComplete = true;
 	}, []);
 	
