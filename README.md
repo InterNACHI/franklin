@@ -52,3 +52,8 @@ Franklin(document.getElementById("address"), {
 - Explore wrapping in web component / jQuery plugin
 - Allow passing IDs
 - Validation
+
+## Building
+
+- `lerna run deploy` builds and deploys github docs
+- `lerna publish` bumps version, tags, and publishes to npm
