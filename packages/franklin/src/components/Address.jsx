@@ -19,11 +19,12 @@ export function Address(props) {
 	const {
 		name = 'address',
 		defaultCountry = 'US',
+		onChange = noop => noop,
 	} = props;
 	
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
-	const [values, setValue] = useValues(defaultCountry, props.value);
+	const [values, setValue] = useValues(defaultCountry, props.value, onChange);
 	const country = countries[values.country];
 	const countryId = createId(name, 'country', 'select');
 	

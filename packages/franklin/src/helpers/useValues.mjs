@@ -1,19 +1,40 @@
 import { useState } from 'react';
 
-export function useValues(defaultCountry = 'US', originalValues = {}) {
+const empty = {
+	country: '',
+	address1: '',
+	address2: '',
+	administrative_area: '',
+	locality: '',
+	sublocality: '',
+	postal_code: '',
+	sorting_code: '',
+};
+
+export function useValues(defaultCountry = 'US', originalValues = {}, onChange = noop => noop) {
 	const [allValues, setAllValues] = useState(() => ({
+		...empty,
 		country: defaultCountry,
-		address1: '',
-		address2: '',
-		administrative_area: '',
-		locality: '',
-		sublocality: '',
-		postal_code: '',
-		sorting_code: '',
 		...originalValues,
 	}));
 	
-	const setValue = (key, value) => setAllValues({ ...allValues, [key]: value });
+	const setValue = (key, value) => {
+		let nextValue = { ...allValues, [key]: value };
+		
+		if (nextValue.country !== allValues.country) {
+			nextValue = { 
+				...empty, 
+				country: nextValue.country,
+				address1: nextValue.address1,
+				address2: nextValue.address2,
+			};
+		}
+		
+		setAllValues(nextValue);
+		onChange(nextValue);
+		
+		return nextValue;
+	}
 	
 	return [allValues, setValue];
 }

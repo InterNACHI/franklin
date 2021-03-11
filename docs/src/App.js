@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Address } from '@internachi/franklin';
 
 export default function App() {
+	const [json, setJson] = useState('{}');
+	
 	return (
 		<div className="container mx-auto my-12 md:flex">
 			<div className="md:w-1/2 p-8 md:text-right text-white">
@@ -25,6 +27,7 @@ export default function App() {
 			<div className="md:w-1/2 mx-4 md:mx-0">
 				<div className="bg-white rounded p-8">
 					<Address
+						onChange={ value => setJson(JSON.stringify(value, null, 2)) }
 						classNames={ {
 							select: "block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50",
 							grid: "space-y-2",
@@ -33,6 +36,12 @@ export default function App() {
 							label: "block",
 							input: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
 						} }
+					/>
+				</div>
+				<div className="bg-black opacity-90 rounded p-8 mt-4">
+					<pre
+						className="text-white font-mono opacity-90"
+						children={json}	
 					/>
 				</div>
 			</div>
