@@ -1,19 +1,23 @@
-import React, { Fragment, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import data from '../../data.json';
 import expandCountry from '../helpers/expandCountry.mjs';
-import { useId } from '../helpers/useId.mjs';
 import Wrapper from './Wrapper.jsx';
 import DefaultLabel from './DefaultLabel.jsx';
 import createId from '../core/defaults/createId.mjs';
 import DefaultSelect from './DefaultSelect.jsx';
 import DefaultOption from './DefaultOption.jsx';
+import DefaultInput from './DefaultInput.jsx';
 import getClassName from '../helpers/getClassName.mjs';
 
+// This takes our compressed country data and converts it to a typical
+// JSON structure that's easy to work with.
 const countries = [...data].reduce((data, compressed) => {
 	const country = expandCountry(compressed);
 	data[country.code] = country;
 	return data;
 }, {});
+
+// console.log(countries);
 
 const AddressContext = React.createContext({});
 
@@ -21,18 +25,37 @@ export function Address(props) {
 	const {
 		name = 'address',
 		defaultCountry = 'US',
-		components = {},
+		components: componentOverrides = {},
+		value: originalValues = {},
 	} = props;
 	
+	// All components can be overwritten by passing a new React component
+	// in through the `components` prop. By default, all components have
+	// as little markup as necessary.
 	const {
-		grid:Grid = Wrapper,
+		Grid = Wrapper,
 		GridRow = Wrapper,
 		GridColumn = Wrapper,
 		Label = DefaultLabel,
 		Select = DefaultSelect,
 		Option = DefaultOption,
-	} = components;
+		Input = DefaultInput,
+	} = componentOverrides;
 	
+	// Once we've applied the default implementations, we'll push them back
+	// into a `components` object so that we can easily pass them down into children.
+	const components = {
+		Grid,
+		GridRow,
+		GridColumn,
+		Label,
+		Select,
+		Option,
+		Input,
+	};
+	
+	// If `classNames.x` is passed into the props, we'll use that. Otherwise,
+	// we default to something like `franklin__x`
 	const classNames = {
 		grid: getClassName('grid', props),
 		gridRow: getClassName('gridRow', props),
@@ -43,47 +66,134 @@ export function Address(props) {
 		input: getClassName('input', props),
 	};
 	
-	const [countryCode, setCountryCode] = useState(defaultCountry);
-	const country = countries[countryCode];
+	const [values, setAllValues] = useState(() => ({
+		country: defaultCountry,
+		address1: '',
+		address2: '',
+		administrative_area: '',
+		locality: '',
+		sublocality: '',
+		postal_code: '',
+		sorting_code: '',
+		...originalValues,
+	}));
+	const setValue = (key, value) => setAllValues({...values, [key]: value });
 	
+	const country = countries[values.country];
 	const countryId = createId(name, 'country', 'select');
 	
 	return (
 		<Grid className={ classNames.grid }>
 			
+			{/* JSON representation of data */ }
+			<input 
+				type="hidden" 
+				name={`${name}[json]`} 
+				value={JSON.stringify(values)} 
+			/>
+			
 			{/* Country Select Box */ }
 			<GridRow className={ classNames.gridRow }>
 				<SelectColumn
-					GridColumn={ GridColumn }
-					Label={ Label }
-					Select={ Select }
+					components={ components }
 					classNames={ classNames }
 					name={ `${ name }[country]` }
-					value={ countryCode }
+					value={ values.country }
 					options={ Object.values(countries).map(country => ({ label: country.name, value: country.code })) }
 					label={ country.labels.country }
 					required={ true }
 					id={ countryId }
-					onChange={ value => setCountryCode(value) }
+					onChange={ value => setValue('country', value) }
 				/>
 			</GridRow>
 			
 			{/* Dynamic Grid */ }
-			{ country.grid.map(row => (
-				<GridRow className={ classNames.gridRow }>
-					<GridColumn className={ classNames.gridColumn }>
-					</GridColumn>
-				</GridRow>
-			)) }
+			{ country.grid.map((row, index) => <Row
+				key={ `row-${ index }` }
+				name={ name }
+				row={ row }
+				classNames={ classNames }
+				components={ components }
+				country={ country }
+				values={ values }
+				setValue={ setValue }
+			/>) }
 		</Grid>
 	);
 }
 
+function Row(props) {
+	const { name, row, components, classNames, country, values, setValue } = props;
+	const { GridColumn, Select, Input } = components;
+	
+	const columns = Object.entries(row)
+		.filter(([_, enabled]) => enabled)
+		.map(([key]) => key);
+	
+	return (
+		<div className={ classNames.gridRow }>
+			{ columns.map(columnName => (
+				<GridColumn key={columnName} className={ classNames.gridColumn }>
+					<Column
+						components={ components }
+						classNames={ classNames }
+						country={ country }
+						inputName={ name }
+						name={ columnName }
+						value={ values[columnName] }
+						onChange={ value => setValue(columnName, value) }
+					/>
+				</GridColumn>
+			)) }
+		</div>
+	);
+}
+
+function Column(props) {
+	const { inputName, name, value, components, classNames, country, onChange } = props;
+	const { labels, required, subdivisions } = country;
+	const label = labels[name];
+	
+	if ('administrative_area' === name && subdivisions.length) {
+		const options = subdivisions.map(subdivision => {
+			const option = { label: subdivision.name, value: subdivision.code };
+			if (subdivision.latinName !== null && subdivision.latinName !== subdivision.name) {
+				option.label += ` (${subdivision.latinName})`;
+			}
+			return option;
+		});
+		
+		options.unshift({ label: '--', value: '' });
+		
+		return <SelectColumn
+			components={ components }
+			classNames={ classNames }
+			name={ `${ inputName }[${name}]` }
+			value={ value }
+			label={ label }
+			id={ createId(name, name, 'select') }
+			required={ required[name] }
+			onChange={ value => onChange(value) }
+			options={ options }
+		/>;
+	}
+	
+	const id = createId(name, name, 'input');
+	return <InputColumn
+		components={ components }
+		classNames={ classNames }
+		name={ `${ inputName }[${ name }]` }
+		value={ value }
+		label={ label }
+		id={ createId(name, name, 'select') }
+		required={ required[name] }
+		onChange={ value => onChange(value) }
+	/>;
+}
+
 function SelectColumn(props) {
 	const {
-		GridColumn,
-		Label,
-		Select,
+		components,
 		classNames,
 		name,
 		value,
@@ -93,6 +203,13 @@ function SelectColumn(props) {
 		onChange,
 		options,
 	} = props;
+	
+	const {
+		GridColumn,
+		Label,
+		Select,
+		Option,
+	} = components;
 	
 	return (
 		<GridColumn className={ classNames.gridColumn }>
@@ -114,12 +231,56 @@ function SelectColumn(props) {
 				{ Object.values(options).map(option =>
 					<Option
 						key={ option.value }
-						optionProps={ { value } }
+						optionProps={ { value: option.value } }
 						className={ classNames.option }
 						label={ option.label }
 					/>
 				) }
 			</Select>
+		</GridColumn>
+	);
+}
+
+function InputColumn(props) {
+	const {
+		components,
+		classNames,
+		name,
+		value,
+		label,
+		id,
+		required,
+		onChange,
+	} = props;
+	
+	const {
+		GridColumn,
+		Label,
+		Input,
+	} = components;
+	
+	return (
+		<GridColumn className={ classNames.gridColumn }>
+			<Label
+				label={ label }
+				required={ required }
+				labelProps={ { htmlFor: id } }
+				className={ classNames.label }
+			/>
+			<Input
+				key={ name }
+				className={ classNames.input }
+				inputProps={ {
+					id,
+					name,
+					autoCorrect: "off",
+					autoComplete: autoComplete(name),
+					spellCheck: "false",
+					required: required[name],
+					"aria-required": required[name],
+					onChange: e => onChange(e.target.value),
+				} }
+			/>
 		</GridColumn>
 	);
 }

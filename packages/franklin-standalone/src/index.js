@@ -1,6 +1,6 @@
-import { render } from 'preact';
+import { render, h } from 'preact';
 import { Address } from '@internachi/franklin';
 
 window.Franklin = function(target, props) {
-	render(<Address {...props} />, target);
+	render(h(Address, props), target);
 };

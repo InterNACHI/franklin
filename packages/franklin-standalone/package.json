@@ -15,7 +15,7 @@
 		"url": "git+https://github.com/InterNACHI/franklin.git"
 	},
 	"scripts": {
-		"build": "microbundle build --alias react=preact/compat"
+		"build": "microbundle build --external none --alias react=preact/compat"
 	},
 	"dependencies": {
 		"@internachi/franklin": "^0.1.0"

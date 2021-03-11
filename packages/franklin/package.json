@@ -9,7 +9,7 @@
     "./helpers/expandCountry": "./src/helpers/expandCountry.mjs",
     "./helpers/mappers": "./src/helpers/mappers.mjs"
   },
-  "module": "./dist/franklin.mjs",
+  "module": "./dist/franklin.esm.js",
   "unpkg": "./dist/franklin.umd.js",
   "files": [
     "dist",
