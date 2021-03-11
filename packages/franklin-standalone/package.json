@@ -1,6 +1,6 @@
 {
 	"name": "@internachi/franklin-standalone",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/InterNACHI/franklin#readme",
 	"license": "MIT",
@@ -18,7 +18,7 @@
 		"build": "microbundle build --external none --alias react=preact/compat"
 	},
 	"dependencies": {
-		"@internachi/franklin": "^0.2.0"
+		"@internachi/franklin": "^0.2.1"
 	},
 	"devDependencies": {
 		"microbundle": "^0.13.0",
