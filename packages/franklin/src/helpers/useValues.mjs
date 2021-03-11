@@ -13,7 +13,7 @@ export function useValues(defaultCountry = 'US', originalValues = {}) {
 		...originalValues,
 	}));
 	
-	const setValue = (key, value) => setAllValues({ ...values, [key]: value });
+	const setValue = (key, value) => setAllValues({ ...allValues, [key]: value });
 	
 	return [allValues, setValue];
 }

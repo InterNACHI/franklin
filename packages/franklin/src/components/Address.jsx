@@ -27,6 +27,8 @@ export function Address(props) {
 	const country = countries[values.country];
 	const countryId = createId(name, 'country', 'select');
 	
+	const { Grid, GridRow } = components;
+	
 	// Eventually I'd like to offer a JSON prop that causes JSON to be used instead:
 	// <input
 	// 	type="hidden"
@@ -103,7 +105,7 @@ function Column(props) {
 		const options = subdivisions.map(subdivision => {
 			const option = { label: subdivision.name, value: subdivision.code };
 			if (subdivision.latinName !== null && subdivision.latinName !== subdivision.name) {
-				option.label += ` (${subdivision.latinName})`;
+				option.label += ` – ${subdivision.latinName}`;
 			}
 			return option;
 		});

@@ -1,6 +1,7 @@
 data/*
 !data/.gitkeep
 .idea/
+data--backup/
 
 # Logs
 logs
