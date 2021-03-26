@@ -2,6 +2,7 @@ export const LABELS = 1;
 export const FIELDS = 2;
 export const COUNTRY = 3;
 export const SUBDIVISION = 4;
+export const SUBDIVISIONS = 5;
 
 const definitions = {
 	[FIELDS]: [
@@ -27,6 +28,11 @@ const definitions = {
 		'name',
 		'latinName',
 	],
+	[SUBDIVISIONS]: [
+		'keys',
+		'names',
+		'latin_names',
+	],
 };
 
 const defaults = {
@@ -39,6 +45,11 @@ const defaults = {
 		sublocality: 'Suburb',
 		postal_code: 'Postal',
 		sorting_code: 'Sorting Code',
+	},
+	[SUBDIVISIONS]: {
+		keys: null, 
+		names: null, 
+		latin_names: null
 	},
 };
 
@@ -62,16 +73,6 @@ export function compress(data, kind) {
 	return compressed;
 }
 
-export function compressFlags(flags, kind) {
-	return [...definitions[kind]]
-		.reduce((compressed, key, index) => {
-			const flag = Math.pow(2, index);
-			return true === flags[key]
-				? compressed | flag
-				: compressed;
-		}, 0);
-}
-
 export function expand(data, kind) {
 	return [...definitions[kind]]
 		.reduce((expanded, key, index) => {
@@ -83,15 +84,6 @@ export function expand(data, kind) {
 				? defaults[kind][key]
 				: value;
 			
-			return expanded;
-		}, {});
-}
-
-export function expandFlags(flags, kind) {
-	return [...definitions[kind]]
-		.reduce((expanded, key, index) => {
-			const flag = Math.pow(2, index);
-			expanded[key] = (flags & flag) > 0;
 			return expanded;
 		}, {});
 }

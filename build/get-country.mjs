@@ -3,10 +3,10 @@ import Country from './Country.mjs';
 
 let defaults = null;
 
-export default async function getCountry(country) {
-	const data = await get(country.toUpperCase());
+export default async function getCountry(country_code) {
+	const data = await get(country_code.toUpperCase());
 	
-	if (null === defaults && 'ZZ' !== country) {
+	if (null === defaults && 'ZZ' !== country_code) {
 		defaults = await get('ZZ');
 	}
 	

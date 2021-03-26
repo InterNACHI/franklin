@@ -1,5 +1,7 @@
 import getTerritories from './get-territories.mjs';
-import { compress, compressFlags, COUNTRY, SUBDIVISION, FIELDS } from '@internachi/franklin/helpers/mappers';
+import { compress, COUNTRY, FIELDS, SUBDIVISIONS } from '@internachi/franklin/helpers/mappers';
+import { getLabel } from './i18n.mjs';
+import { memoize } from './memoize-strings.mjs';
 
 let territories = null;
 
@@ -13,7 +15,7 @@ export default class Country {
 			code: this.definition.key,
 			name: await getName(this.definition),
 			grid: buildGrid(this.definition),
-			labels: buildLabels(this.definition),
+			labels: await buildLabels(this.definition),
 			required: buildRequired(this.definition),
 			subdivisions: buildSubdivisions(this.definition),
 		}, COUNTRY);
@@ -32,82 +34,67 @@ async function getName(definition) {
 	return definition.name;
 }
 
-function buildLabels(definition) {
-	const format = (label) => {
-		if (!label) {
-			return label;
-		}
-		
-		return label
-			.replace(/_/g, ' ')
-			.replace(/(?:^|\s)(\w)/g, letter => letter.toUpperCase());
-	}
-	
+async function buildLabels(definition) {
 	return compress({
-		postal_code: format(definition.zip_name_type),
-		administrative_area: format(definition.state_name_type),
-		locality: format(definition.locality_name_type),
-		sublocality: format(definition.sublocality_name_type),
+		postal_code: await getLabel(definition.zip_name_type),
+		administrative_area: await getLabel(definition.state_name_type),
+		locality: await getLabel(definition.locality_name_type),
+		sublocality: await getLabel(definition.sublocality_name_type),
 	}, FIELDS);
 }
 
+
 function buildGrid(definition) {
-	return [...definition.fmt.matchAll(/%([a-z])/gi)]
+	const fields = ['R', '1', '2', 'A', 'S', 'C', 'D', 'Z', 'X', 'n'];
+	
+	const grid = [...definition.fmt.matchAll(/%([a-z])/gi)]
 		.reduce((grid, [_, char]) => {
-			const name = fieldName(char);
-			
-			if ('n' === char) {
-				grid.push({});
-			} else if ('address' === name) {
-				grid[grid.length - 1].address1 = true;
-				grid.push({});
-				grid[grid.length - 1].address2 = true;
-			} else if (name) {
-				grid[grid.length - 1][name] = true;
+			if (-1 === fields.indexOf(char)) {
+				return grid;
 			}
 			
-			return grid;
-		}, [{}])
-		.filter(row => Object.keys(row).length)
-		.map(row => compressFlags(row, FIELDS));
+			return grid + char;
+		}, '')
+		.replace(/n+/g, '~')
+		.replace(/(^~|~$)/g, '')
+		.replace(/[12]+/, 'A');
+	
+	return memoize('grid', grid);
 }
 
 function buildRequired(definition) {
 	if (!('require' in definition)) {
-		return 0;
+		return '';
 	}
 	
-	const required = definition.require.split('')
-		.reduce((required, char) => {
-			const name = fieldName(char);
-			if (name) {
-				required[name] = true;
-			}
-			return required;
-		}, {});
-	
-	return compressFlags(required, FIELDS);
+	return memoize('required', definition.require);
 }
 
 function buildSubdivisions(definition) {
 	// Extract data
-	const { sub_keys = null, sub_names = [], sub_lnames = [] } = definition;
+	let { 
+		sub_keys = null,
+		sub_names = null,
+		sub_lnames = null,
+	} = definition;
 	
 	if (null === sub_keys) {
 		return [];
 	}
 	
-	return sub_keys.map((code, index) => {
-		const name = 'undefined' !== typeof sub_names[index] && sub_names[index] !== sub_keys[index]
-			? sub_names[index]
-			: null;
-		
-		const latinName = 'undefined' !== typeof sub_lnames[index] && sub_lnames[index] !== sub_names[index]
-			? sub_lnames[index]
-			: null;
-		
-		return compress({ code, name, latinName }, SUBDIVISION);
-	});
+	if (sub_names === sub_keys) {
+		sub_names = null;
+	}
+	
+	if (sub_lnames === sub_names) {
+		sub_lnames = null;
+	}
+	
+	return compress({
+		keys: sub_keys,
+		names: sub_names,
+		latin_names: sub_lnames,
+	}, SUBDIVISIONS);
 }
 
 function normalize(definition) {
@@ -124,7 +111,7 @@ function normalize(definition) {
 	
 	for (let key of lists) {
 		if (key in definition) {
-			definition[key] = definition[key].split('~');
+			definition[`${ key }_list`] = definition[key].split('~');
 		}
 	}
 	
@@ -150,101 +137,3 @@ function fieldName(char) {
 	
 	return false;
 }
-
-// function extract(country, key) {
-// 	switch (key) {
-// 		case 'fmt':
-// 			// Get format
-// 			break;
-//		
-// 		case 'lfmt':
-// 			// The latin format string used when a country defines an alternative format for
-// 			// use with the latin script, such as in China.
-// 			break;
-//		
-// 		case 'lang':
-// 			// Default language
-// 			break;
-//		
-// 		case 'languages':
-// 			// List of all languages
-// 			// Separated by ~
-// 			break;
-//		
-// 		case 'state_name_type':
-// 			// Name for admin area / state
-// 			break;
-//		
-// 		case 'locality_name_type':
-// 			// Name for locality / city
-// 			break;
-//		
-// 		case 'sublocality_name_type':
-// 			// Name for sub-locality
-// 			break;
-//		
-// 		case 'zip_name_type':
-// 			break;
-//		
-// 		case 'require':
-// 			// Which fields are required
-// 			break;
-//		
-// 		case 'width_overrides':
-// 			// Isn't in use at top-level. We'll have to see what happens with nested levels.
-// 			break;
-// 	}
-// }
-//
-// const NEW_LINE = "%n";
-//
-// const fieldWidths = {
-// 	SHORT: 'SHORT', // "S" and "N" (eventually maybe narrow)
-// 	LONG: 'LONG', // "L"
-// };
-//
-// const fields = {
-// 	COUNTRY: 'R',
-// 	ADDRESS_LINE_1: '1',
-// 	ADDRESS_LINE_2: '2',
-// 	STREET_ADDRESS: 'A',
-// 	ADMIN_AREA: 'S',
-// 	LOCALITY: 'C',
-// 	DEPENDENT_LOCALITY: 'D',
-// 	POSTAL_CODE: 'Z',
-// 	SORTING_CODE: 'X',
-// 	RECIPIENT: 'N',
-// 	ORGANIZATION: 'O',
-// };
-//
-// function getDefaultWidthType(field) {
-// 	if (field === fields.POSTAL_CODE || field === fields.SORTING_CODE) {
-// 		return fieldWidths.SHORT;
-// 	}
-//	
-// 	return fieldWidths.LONG;
-// }
-
-// AddressField.STREET_ADDRESS gets converted on-the-fly to ADDRESS_LINE_1 and ADDRESS_LINE_2
-// "require" is set to the keys that are required, i.e. "ACSZ" for US (Address, Locality, Admin Area, Postal)
-// "upper" is set to the values that are upper-cased, i.e. "CS" for US (Locality and Admin Area)
-
-
-// NOTES:
-
-// Example string: "%C:L%S:S"
-// This is field 'C' (locality) is size 'L' (long) and 'S' (admin area) is 'S' (short)
-
-// sub_keys always holds the "value", and sometimes the label. If sub_names exists,
-// then we use that.
-
-
-// "zip_name_type": "postal",
-// "state_name_type": "province",
-// "locality_name_type": "city",
-// "sublocality_name_type": "suburb"
-
-// 'administrative_area',
-// 		'locality',
-// 		'sublocality',
-// 		'postal',

@@ -5,14 +5,14 @@ import { fileURLToPath } from 'url';
 
 const DEFAULT_ROOT = 'https://chromium-i18n.appspot.com/ssl-address/data';
 
-export default async function(path, root = DEFAULT_ROOT) {
+export default async function(path, root = DEFAULT_ROOT, json = true) {
 	const cached = await loadFromCache(path);
 	
 	if (cached) {
 		return cached;
 	}
 	
-	return await download(path, root);
+	return await download(path, root, json);
 }
 
 function get(url) {
@@ -28,7 +28,7 @@ function get(url) {
 	});
 }
 
-async function download(path, root) {
+async function download(path, root, json) {
 	let url = '' === path
 		? root
 		: `${ root }/${ path }`;
@@ -47,9 +47,14 @@ async function download(path, root) {
 		res.on('data', chunk => data += chunk);
 		res.on('end', () => {
 			try {
-				const parsed = JSON.parse(data);
 				writeToCache(path, data);
-				resolve(parsed);
+				
+				if (json) {
+					const parsed = JSON.parse(data);
+					resolve(parsed);
+				} else {
+					resolve(data);
+				}
 			} catch (e) {
 				reject(e);
 			}
@@ -87,7 +92,7 @@ function writeToCache(path, data) {
 				return resolve(false);
 			}
 			
-			writeFile(filename, data, (err) => {
+			writeFile(filename, data, 'utf8', (err) => {
 				if (err) {
 					console.warn(err);
 					return resolve(false);

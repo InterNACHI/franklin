@@ -28,6 +28,7 @@
     "microbundle": "^0.13.0",
     "postcss": "^8.2.1",
     "tailwindcss": "^2.0.2",
-    "tailwindcss-cli": "^0.1.2"
+    "tailwindcss-cli": "^0.1.2",
+    "xml2js": "^0.4.23"
   }
 }
