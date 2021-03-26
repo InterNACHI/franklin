@@ -30,13 +30,6 @@ export function Address(props) {
 	
 	const { Grid, GridRow } = components;
 	
-	// Eventually I'd like to offer a JSON prop that causes JSON to be used instead:
-	// <input
-	// 	type="hidden"
-	// 	name={ name }
-	// 	value={ JSON.stringify(values) }
-	// />
-	
 	return (
 		<Grid className={ classNames.grid }>
 			
@@ -72,28 +65,25 @@ export function Address(props) {
 
 function Row(props) {
 	const { name, row, components, classNames, country, values, setValue } = props;
-	const { GridColumn } = components;
+	const { GridRow, GridColumn } = components;
 	
 	const columns = Object.entries(row)
 		.filter(([_, enabled]) => enabled)
 		.map(([key]) => key);
 	
 	return (
-		<div className={ classNames.gridRow }>
-			{ columns.map(columnName => (
-				<GridColumn key={columnName} className={ classNames.gridColumn }>
-					<Column
-						components={ components }
-						classNames={ classNames }
-						country={ country }
-						inputName={ name }
-						name={ columnName }
-						value={ values[columnName] }
-						onChange={ value => setValue(columnName, value) }
-					/>
-				</GridColumn>
-			)) }
-		</div>
+		<GridRow className={ classNames.gridRow }>
+			{ columns.map(columnName => <Column
+				key={ columnName }
+				components={ components }
+				classNames={ classNames }
+				country={ country }
+				inputName={ name }
+				name={ columnName }
+				value={ values[columnName] }
+				onChange={ value => setValue(columnName, value) }
+			/>) }
+		</GridRow>
 	);
 }
 
