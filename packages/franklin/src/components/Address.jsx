@@ -41,7 +41,7 @@ export function Address(props) {
 			
 			{/* Dynamic Grid */ }
 			{ country.grid.map((row, index) => <Row
-				key={ `row-${ index }` }
+				key={ index }
 				name={ name }
 				row={ row }
 				classNames={ classNames }
@@ -60,15 +60,15 @@ function Row(props) {
 	
 	return (
 		<GridRow className={ classNames.gridRow }>
-			{ row.map(columnName => <Column
-				key={ columnName }
+			{ row.map(field => <Column
+				key={ field }
 				components={ components }
 				classNames={ classNames }
 				country={ country }
 				inputName={ name }
-				name={ columnName }
-				value={ values[columnName] }
-				onChange={ value => setValue(columnName, value) }
+				name={ field }
+				value={ values[field] }
+				onChange={ value => setValue(field, value) }
 			/>) }
 		</GridRow>
 	);
@@ -76,7 +76,7 @@ function Row(props) {
 
 function Column(props) {
 	const { inputName, name, value, components, classNames, country, onChange } = props;
-	const { labels, required, subdivisions } = country;
+	const { labels, subdivisions } = country;
 	const label = labels[name];
 	
 	if ('administrative_area' === name && subdivisions.length) {
