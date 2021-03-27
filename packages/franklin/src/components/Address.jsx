@@ -1,19 +1,10 @@
 import React from 'react';
-import data from '../../data.json';
-import expandCountry from '../helpers/expandCountry.mjs';
 import createId from '../core/defaults/createId.mjs';
 import getClassNames from '../helpers/getClassNames.mjs';
 import getConfigurableComponents from '../helpers/getConfigurableComponents.mjs';
 import useValues from '../helpers/useValues.mjs';
 import getAutoComplete from '../helpers/getAutoComplete.mjs';
-
-// This takes our compressed country data and converts it to a typical
-// JSON structure that's easy to work with.
-const countries = [...data].reduce((data, compressed) => {
-	const country = expandCountry(compressed);
-	data[country.code] = country;
-	return data;
-}, {});
+import Country from '../core/Country.mjs';
 
 export function Address(props) {
 	const {
@@ -25,8 +16,12 @@ export function Address(props) {
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
 	const [values, setValue] = useValues(defaultCountry, props.value, onChange);
-	const country = countries[values.country];
-	const countryId = createId(name, 'country', 'select');
+	// const country = countries[values.country];
+	// const countryId = createId(name, 'country', 'select');
+	
+	// FIXME:
+	const country = Country.find(values.country);
+	return <div>Hello</div>;
 	
 	const { Grid, GridRow } = components;
 	

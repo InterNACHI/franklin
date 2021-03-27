@@ -117,23 +117,3 @@ function normalize(definition) {
 	
 	return definition;
 }
-
-function fieldName(char) {
-	const fields = {
-		'R': 'country',
-		'1': 'address1',
-		'2': 'address2',
-		'A': 'address',
-		'S': 'administrative_area',
-		'C': 'locality',
-		'D': 'sublocality',
-		'Z': 'postal_code',
-		'X': 'sorting_code',
-	};
-	
-	if (char in fields) {
-		return fields[char];
-	}
-	
-	return false;
-}
