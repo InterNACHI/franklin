@@ -6,8 +6,8 @@
   "main": "./dist/franklin.js",
   "exports": {
     ".": "./dist/franklin.modern.js",
-    "./helpers/expandCountry": "./src/helpers/expandCountry.mjs",
-    "./helpers/mappers": "./src/helpers/mappers.mjs"
+    "./helpers/mappers": "./src/helpers/mappers.mjs",
+    "./models/Country": "./src/models/Country.mjs"
   },
   "module": "./dist/franklin.esm.js",
   "unpkg": "./dist/franklin.umd.js",

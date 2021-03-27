@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const empty = {
 	country: '',
@@ -31,10 +31,11 @@ export function useValues(defaultCountry = 'US', originalValues = {}, onChange =
 		}
 		
 		setAllValues(nextValue);
-		onChange(nextValue);
 		
 		return nextValue;
 	}
+	
+	useEffect(() => onChange(allValues), [allValues]);
 	
 	return [allValues, setValue];
 }

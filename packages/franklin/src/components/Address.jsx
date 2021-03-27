@@ -1,10 +1,10 @@
 import React from 'react';
-import createId from '../core/defaults/createId.mjs';
+import createId from '../helpers/createId.mjs';
 import getClassNames from '../helpers/getClassNames.mjs';
 import getConfigurableComponents from '../helpers/getConfigurableComponents.mjs';
 import useValues from '../helpers/useValues.mjs';
 import getAutoComplete from '../helpers/getAutoComplete.mjs';
-import Country from '../core/Country.mjs';
+import Country from '../models/Country.mjs';
 
 export function Address(props) {
 	const {
