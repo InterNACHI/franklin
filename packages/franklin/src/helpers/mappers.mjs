@@ -113,9 +113,5 @@ export function expandFields(chars) {
 		'X': 'sorting_code',
 	};
 	
-	const expanded = chars.split('').map(char => fields[char] || false);
-	
-	return expanded.length > 1
-		? expanded
-		: expanded[0];
+	return chars.split('').map(char => fields[char] || false);
 }

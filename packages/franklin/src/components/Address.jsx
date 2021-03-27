@@ -20,7 +20,7 @@ export function Address(props) {
 	// const countryId = createId(name, 'country', 'select');
 	
 	// FIXME:
-	const country = Country.find(values.country);
+	const country = Country.find('US');
 	return <div>Hello</div>;
 	
 	const { Grid, GridRow } = components;
@@ -90,8 +90,8 @@ function Column(props) {
 	if ('administrative_area' === name && subdivisions.length) {
 		const options = subdivisions.map(subdivision => {
 			const option = { label: subdivision.name, value: subdivision.code };
-			if (subdivision.latinName !== null && subdivision.latinName !== subdivision.name) {
-				option.label += ` – ${subdivision.latinName}`;
+			if (subdivision.latin_name !== null && subdivision.latin_name !== subdivision.name) {
+				option.label += ` – ${subdivision.latin_name}`;
 			}
 			return option;
 		});

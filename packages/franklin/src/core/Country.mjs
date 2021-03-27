@@ -1,4 +1,4 @@
-import { expand, COUNTRY, FIELDS, expandFields } from '../helpers/mappers.mjs';
+import { COUNTRY, expand, expandFields, FIELDS, SUBDIVISIONS } from '../helpers/mappers.mjs';
 import data from '../../data.json';
 
 export class Country {
@@ -20,59 +20,52 @@ export class Country {
 		this.name = expanded.name;
 		
 		this.grid = expandGrid(expanded.grid);
-		this.labels = expand(expanded.labels, FIELDS, data.labels)
+		
+		this.labels = expand(expanded.labels, FIELDS, data.labels);
+		
 		this.required = expandFields(data.required[expanded.required]);
+		this.required.push('address1');
 		
-		console.log(this);
-		
-		// FIXME:
-		/*
-		this.grid = expanded.grid.map(row => expandFlags(row, FIELDS));
-		
-		this.labels = expand(expanded.labels, FIELDS);
-		
-		
-		this.subdivisions = expanded.subdivisions.map(([code, name, latinName]) => {
-			name = name || code;
-			return { code, name, latinName };
-		});
-		*/
+		this.subdivisions = expandSubdivisions(expanded.subdivisions);
 	}
 }
 
 export default Country;
 
 function expandGrid(grid) {
-	// FIXME
-	return null;
+	return data.grids[grid]
+		.replace('A', '1~2') // Convert "address" to address lines 1 and 2
+		.split('~')
+		.map(row => expandFields(row));
 }
 
-function expandCountry(compressed) {
-	const expanded = expand(compressed, COUNTRY);
+function expandSubdivisions(compressed) {
+	const expanded = expand(compressed, SUBDIVISIONS);
 	
-	expanded.grid = expanded.grid.map(row => expandFlags(row, FIELDS));
+	// Split out subdivisions by the "~" separator
+	Object.entries(expanded).forEach(([key, value]) => {
+		expanded[key] = value
+			? value.split('~')
+			: [];
+	});
 	
-	expanded.subdivisions = expanded.subdivisions
-		.map(([code, name, latinName = null]) => {
-			name = name || code;
-			return { code, name, latinName };
-		}).sort((subdivision1, subdivision2) => {
-			let a = (subdivision1.latinName || subdivision1.name).toUpperCase();
-			let b = (subdivision2.latinName || subdivision2.name).toUpperCase();
+	// Map into well-formed objects & sort by Latin name
+	return expanded.keys
+		.map((code, index) => {
+			const name = expanded.names[index] || code;
+			const latin_name = expanded.latin_names[index] || null;
+			return { code, name, latin_name };
+		})
+		.sort((subdivision1, subdivision2) => {
+			let a = (subdivision1.latin_name || subdivision1.name).toUpperCase();
+			let b = (subdivision2.latin_name || subdivision2.name).toUpperCase();
 			
 			if (a < b) {
 				return -1;
-			}
-			if (a > b) {
+			} else if (a > b) {
 				return 1;
 			}
+			
 			return 0;
 		});
-	
-	expanded.labels = expand(expanded.labels, FIELDS);
-	
-	expanded.required = expandFlags(expanded.required, FIELDS);
-	expanded.required.address1 = true;
-	
-	return expanded;
 }
