@@ -1,4 +1,4 @@
-import { COUNTRY, expand, expandFields, FIELDS, SUBDIVISIONS } from '../helpers/mappers.mjs';
+import { COUNTRY, expand, expandFields, FIELDS, ADMINISTRATIVE_AREAS } from '../helpers/mappers.mjs';
 import data from '../../data.json';
 
 export class Country {
@@ -6,8 +6,8 @@ export class Country {
 	name = '';
 	grid = [];
 	labels = {};
-	required = {};
-	subdivisions = [];
+	required = [];
+	administrative_areas = [];
 	
 	static forSelection() {
 		return Object.values(data.countries).map(compressed => {
@@ -26,14 +26,17 @@ export class Country {
 		this.code = expanded.code;
 		this.name = expanded.name;
 		
-		this.grid = expandGrid(expanded.grid);
+		this.grid = data.grids[expanded.grid]
+			.replace('A', '1~2') // Convert "address" to address lines 1 and 2
+			.split('~')
+			.map(row => expandFields(row))
 		
 		this.labels = expand(expanded.labels, FIELDS, data.labels);
 		
 		this.required = expandFields(data.required[expanded.required]);
 		this.required.push('address1');
 		
-		this.subdivisions = expandSubdivisions(expanded.subdivisions);
+		this.administrative_areas = expandAdministrativeAreas(expanded.administrative_areas);
 	}
 	
 	isRequired(field) {
@@ -43,17 +46,10 @@ export class Country {
 
 export default Country;
 
-function expandGrid(grid) {
-	return data.grids[grid]
-		.replace('A', '1~2') // Convert "address" to address lines 1 and 2
-		.split('~')
-		.map(row => expandFields(row));
-}
-
-function expandSubdivisions(compressed) {
-	const expanded = expand(compressed, SUBDIVISIONS);
+function expandAdministrativeAreas(compressed) {
+	const expanded = expand(compressed, ADMINISTRATIVE_AREAS);
 	
-	// Split out subdivisions by the "~" separator
+	// Split out administrative areas by the "~" separator
 	Object.entries(expanded).forEach(([key, value]) => {
 		expanded[key] = value
 			? value.split('~')
@@ -67,9 +63,9 @@ function expandSubdivisions(compressed) {
 			const latin_name = expanded.latin_names[index] || null;
 			return { code, name, latin_name };
 		})
-		.sort((subdivision1, subdivision2) => {
-			let a = (subdivision1.latin_name || subdivision1.name).toUpperCase();
-			let b = (subdivision2.latin_name || subdivision2.name).toUpperCase();
+		.sort((area1, area2) => {
+			let a = (area1.latin_name || area1.name).toUpperCase();
+			let b = (area2.latin_name || area2.name).toUpperCase();
 			
 			if (a < b) {
 				return -1;

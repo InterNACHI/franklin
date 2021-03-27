@@ -76,14 +76,14 @@ function Row(props) {
 
 function Column(props) {
 	const { inputName, name, value, components, classNames, country, onChange } = props;
-	const { labels, subdivisions } = country;
+	const { labels, administrative_areas } = country;
 	const label = labels[name];
 	
-	if ('administrative_area' === name && subdivisions.length) {
-		const options = subdivisions.map(subdivision => {
-			const option = { label: subdivision.name, value: subdivision.code };
-			if (subdivision.latin_name !== null && subdivision.latin_name !== subdivision.name) {
-				option.label += ` – ${subdivision.latin_name}`;
+	if ('administrative_area' === name && administrative_areas.length) {
+		const options = administrative_areas.map(administrative_area => {
+			const option = { label: administrative_area.name, value: administrative_area.code };
+			if (administrative_area.latin_name !== null && administrative_area.latin_name !== administrative_area.name) {
+				option.label += ` – ${administrative_area.latin_name}`;
 			}
 			return option;
 		});

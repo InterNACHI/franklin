@@ -1,5 +1,5 @@
 import getTerritories from './get-territories.mjs';
-import { compress, COUNTRY, FIELDS, SUBDIVISIONS } from '@internachi/franklin/helpers/mappers';
+import { compress, COUNTRY, FIELDS, ADMINISTRATIVE_AREAS } from '@internachi/franklin/helpers/mappers';
 import { getLabel } from './i18n.mjs';
 import { memoize } from './memoize-strings.mjs';
 
@@ -17,7 +17,7 @@ export default class Country {
 			grid: buildGrid(this.definition),
 			labels: await buildLabels(this.definition),
 			required: buildRequired(this.definition),
-			subdivisions: buildSubdivisions(this.definition),
+			administrative_areas: buildAdministrativeAreas(this.definition),
 		}, COUNTRY);
 	}
 }
@@ -70,7 +70,7 @@ function buildRequired(definition) {
 	return memoize('required', definition.require);
 }
 
-function buildSubdivisions(definition) {
+function buildAdministrativeAreas(definition) {
 	// Extract data
 	let { 
 		sub_keys = null,
@@ -94,7 +94,7 @@ function buildSubdivisions(definition) {
 		keys: sub_keys,
 		names: sub_names,
 		latin_names: sub_lnames,
-	}, SUBDIVISIONS);
+	}, ADMINISTRATIVE_AREAS);
 }
 
 function normalize(definition) {

@@ -1,8 +1,7 @@
 export const LABELS = 1;
 export const FIELDS = 2;
 export const COUNTRY = 3;
-export const SUBDIVISION = 4;
-export const SUBDIVISIONS = 5;
+export const ADMINISTRATIVE_AREAS = 4;
 
 const definitions = {
 	[FIELDS]: [
@@ -21,14 +20,9 @@ const definitions = {
 		'grid',
 		'labels',
 		'required',
-		'subdivisions',
+		'administrative_areas',
 	],
-	[SUBDIVISION]: [
-		'code',
-		'name',
-		'latinName',
-	],
-	[SUBDIVISIONS]: [
+	[ADMINISTRATIVE_AREAS]: [
 		'keys',
 		'names',
 		'latin_names',
@@ -46,7 +40,7 @@ const defaults = {
 		postal_code: 'Postal',
 		sorting_code: 'Sorting Code',
 	},
-	[SUBDIVISIONS]: {
+	[ADMINISTRATIVE_AREAS]: {
 		keys: null, 
 		names: null, 
 		latin_names: null
