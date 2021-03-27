@@ -9,6 +9,13 @@ export class Country {
 	required = {};
 	subdivisions = [];
 	
+	static forSelection() {
+		return Object.values(data.countries).map(compressed => {
+			const expanded = expand(compressed, COUNTRY);
+			return { label: expanded.name, value: expanded.code };
+		});
+	}
+	
 	static find(country_code) {
 		return new Country(data.countries[country_code]);
 	}
@@ -27,6 +34,10 @@ export class Country {
 		this.required.push('address1');
 		
 		this.subdivisions = expandSubdivisions(expanded.subdivisions);
+	}
+	
+	isRequired(field) {
+		return -1 !== this.required.indexOf(field);
 	}
 }
 

@@ -16,12 +16,8 @@ export function Address(props) {
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
 	const [values, setValue] = useValues(defaultCountry, props.value, onChange);
-	// const country = countries[values.country];
-	// const countryId = createId(name, 'country', 'select');
-	
-	// FIXME:
-	const country = Country.find('US');
-	return <div>Hello</div>;
+	const country = Country.find(values.country);
+	const countryId = createId(name, 'country', 'select');
 	
 	const { Grid, GridRow } = components;
 	
@@ -35,7 +31,7 @@ export function Address(props) {
 					classNames={ classNames }
 					name={ `${ name }[country]` }
 					value={ values.country }
-					options={ Object.values(countries).map(country => ({ label: country.name, value: country.code })) }
+					options={ Country.forSelection() }
 					label={ country.labels.country }
 					required={ true }
 					id={ countryId }
@@ -60,15 +56,11 @@ export function Address(props) {
 
 function Row(props) {
 	const { name, row, components, classNames, country, values, setValue } = props;
-	const { GridRow, GridColumn } = components;
-	
-	const columns = Object.entries(row)
-		.filter(([_, enabled]) => enabled)
-		.map(([key]) => key);
+	const { GridRow } = components;
 	
 	return (
 		<GridRow className={ classNames.gridRow }>
-			{ columns.map(columnName => <Column
+			{ row.map(columnName => <Column
 				key={ columnName }
 				components={ components }
 				classNames={ classNames }
@@ -105,7 +97,7 @@ function Column(props) {
 			value={ value }
 			label={ label }
 			id={ createId(name, name, 'select') }
-			required={ required[name] }
+			required={ country.isRequired(name) }
 			onChange={ value => onChange(value) }
 			options={ options }
 		/>;
@@ -118,7 +110,7 @@ function Column(props) {
 		value={ value }
 		label={ label }
 		id={ createId(name, name, 'select') }
-		required={ required[name] }
+		required={ country.isRequired(name) }
 		onChange={ value => onChange(value) }
 	/>;
 }
@@ -209,8 +201,8 @@ function InputColumn(props) {
 					autoCorrect: "off",
 					autoComplete: getAutoComplete(name),
 					spellCheck: "false",
-					required: required[name],
-					"aria-required": required[name],
+					required: required,
+					"aria-required": required,
 					onChange: e => onChange(e.target.value),
 				} }
 			/>
