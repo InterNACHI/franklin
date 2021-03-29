@@ -33,14 +33,14 @@ export default function App() {
 					
 					<div className="space-x-2">
 						{ tested_countries.map(country_code =>
-							<Flag countryCode={ country_code } style={ { fontSize: 20 } } />
+							<Flag key={ country_code } countryCode={ country_code } style={ { fontSize: 20 } } />
 						) }
 					</div>
 				</div>
 			
 			</div>
 			<div className="md:w-1/2 mx-4 md:mx-0">
-				<div className="bg-white rounded p-8">
+				<form action="" method="get" className="bg-white rounded p-8">
 					<Address
 						onChange={ value => setData(value) }
 						classNames={ {
@@ -52,6 +52,12 @@ export default function App() {
 							input: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
 						} }
 					/>
+					
+					<div className="my-6">
+						<button className="inline-flex font-bold items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-gray-900 hover:text-white bg-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit">
+							Submit (not saved anywhere - use to test validation)
+						</button>
+					</div>
 					
 					<div className="mt-12 pt-6 border-t border-gray-100 space-y-4" style={ { display: feedback_requested ? 'none' : 'block' } }>
 						<p>
@@ -80,7 +86,7 @@ export default function App() {
 						</div>
 					</div>
 				
-				</div>
+				</form>
 				<div className="bg-black opacity-90 rounded p-8 mt-4">
 					<pre
 						className="text-white font-mono opacity-90"

@@ -6,11 +6,15 @@ import useValues from '../helpers/useValues.mjs';
 import getAutoComplete from '../helpers/getAutoComplete.mjs';
 import Country from '../models/Country.mjs';
 
+const AddressContext = React.createContext();
+
 export function Address(props) {
 	const {
 		name = 'address',
 		defaultCountry = 'US',
 		onChange = noop => noop,
+		enforceRequired = true,
+		validate = true,
 	} = props;
 	
 	const components = getConfigurableComponents(props.components);
@@ -19,38 +23,49 @@ export function Address(props) {
 	const country = Country.find(values.country);
 	const countryId = createId(name, 'country', 'select');
 	
+	const context = {
+		name,
+		enforceRequired,
+		validate,
+		country: Country.find(values.country),
+		classNames: getClassNames(props),
+		components: getConfigurableComponents(props.components),
+	};
+	
 	const { Grid, GridRow } = components;
 	
 	return (
-		<Grid className={ classNames.grid }>
-			
-			{/* Country Select Box */ }
-			<GridRow className={ classNames.gridRow }>
-				<SelectColumn
-					components={ components }
+		<AddressContext.Provider value={ context }>
+			<Grid className={ context.classNames.grid }>
+				
+				{/* Country Select Box */ }
+				<GridRow className={ context.classNames.gridRow }>
+					<SelectColumn
+						components={ components }
+						classNames={ classNames }
+						name={ `${ name }[country]` }
+						value={ values.country }
+						options={ Country.forSelection() }
+						label={ country.labels.country }
+						required={ true }
+						id={ countryId }
+						onChange={ value => setValue('country', value) }
+					/>
+				</GridRow>
+				
+				{/* Dynamic Grid */ }
+				{ country.grid.map((row, index) => <Row
+					key={ index }
+					name={ name }
+					row={ row }
 					classNames={ classNames }
-					name={ `${ name }[country]` }
-					value={ values.country }
-					options={ Country.forSelection() }
-					label={ country.labels.country }
-					required={ true }
-					id={ countryId }
-					onChange={ value => setValue('country', value) }
-				/>
-			</GridRow>
-			
-			{/* Dynamic Grid */ }
-			{ country.grid.map((row, index) => <Row
-				key={ index }
-				name={ name }
-				row={ row }
-				classNames={ classNames }
-				components={ components }
-				country={ country }
-				values={ values }
-				setValue={ setValue }
-			/>) }
-		</Grid>
+					components={ components }
+					country={ country }
+					values={ values }
+					setValue={ setValue }
+				/>) }
+			</Grid>
+		</AddressContext.Provider>
 	);
 }
 
@@ -76,14 +91,14 @@ function Row(props) {
 
 function Column(props) {
 	const { inputName, name, value, components, classNames, country, onChange } = props;
-	const { labels, administrative_areas } = country;
-	const label = labels[name];
+	const { administrative_areas } = country;
+	const label = country.getLabel(name);
 	
 	if ('administrative_area' === name && administrative_areas.length) {
 		const options = administrative_areas.map(administrative_area => {
 			const option = { label: administrative_area.name, value: administrative_area.code };
 			if (administrative_area.latin_name !== null && administrative_area.latin_name !== administrative_area.name) {
-				option.label += ` – ${administrative_area.latin_name}`;
+				option.label += ` – ${ administrative_area.latin_name }`;
 			}
 			return option;
 		});
@@ -112,6 +127,8 @@ function Column(props) {
 		id={ createId(name, name, 'select') }
 		required={ country.isRequired(name) }
 		onChange={ value => onChange(value) }
+		pattern={ country.getPattern(name) }
+		title={ country.getDescription(name) }
 	/>;
 }
 
@@ -175,6 +192,8 @@ function InputColumn(props) {
 		id,
 		required,
 		onChange,
+		pattern,
+		title,
 	} = props;
 	
 	const {
@@ -198,10 +217,12 @@ function InputColumn(props) {
 					id,
 					name,
 					value,
+					pattern,
+					required,
+					title,
 					autoCorrect: "off",
 					autoComplete: getAutoComplete(name),
 					spellCheck: "false",
-					required: required,
 					"aria-required": required,
 					onChange: e => onChange(e.target.value),
 				} }

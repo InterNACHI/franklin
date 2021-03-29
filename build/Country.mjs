@@ -1,5 +1,5 @@
 import getTerritories from './get-territories.mjs';
-import { compress, COUNTRY, FIELDS, ADMINISTRATIVE_AREAS } from '@internachi/franklin/helpers/mappers';
+import { compress, COUNTRY, FIELDS, ADMINISTRATIVE_AREAS, PATTERNS } from '@internachi/franklin/helpers/mappers';
 import { getLabel } from './i18n.mjs';
 import { memoize } from './memoize-strings.mjs';
 
@@ -18,6 +18,12 @@ export default class Country {
 			labels: await buildLabels(this.definition),
 			required: buildRequired(this.definition),
 			administrative_areas: buildAdministrativeAreas(this.definition),
+			patterns: compress({
+				postal_code: this.definition.zip,
+			}, PATTERNS),
+			examples: compress({
+				postal_code: (this.definition.zipex || '').split(',').slice(0, 2),
+			}, PATTERNS),
 		}, COUNTRY);
 	}
 }

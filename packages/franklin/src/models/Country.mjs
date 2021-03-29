@@ -1,4 +1,4 @@
-import { COUNTRY, expand, expandFields, FIELDS, ADMINISTRATIVE_AREAS } from '../helpers/mappers.mjs';
+import { COUNTRY, expand, expandFields, FIELDS, ADMINISTRATIVE_AREAS, PATTERNS } from '../helpers/mappers.mjs';
 import data from '../../data.json';
 
 export class Country {
@@ -8,6 +8,8 @@ export class Country {
 	labels = {};
 	required = [];
 	administrative_areas = [];
+	patterns = {};
+	examples = {};
 	
 	static forSelection() {
 		return Object.values(data.countries).map(compressed => {
@@ -37,10 +39,36 @@ export class Country {
 		this.required.push('address1');
 		
 		this.administrative_areas = expandAdministrativeAreas(expanded.administrative_areas);
+		
+		this.patterns = expand(expanded.patterns, PATTERNS);
+		
+		this.examples = expand(expanded.examples, PATTERNS);
 	}
 	
 	isRequired(field) {
 		return -1 !== this.required.indexOf(field);
+	}
+	
+	getPattern(field) {
+		return this.patterns[field] || false;
+	}
+	
+	getLabel(field) {
+		return this.labels[field];
+	}
+	
+	getDescription(field) {
+		if (field in this.examples) {
+			let description = `e.g. ${this.examples[field][0]}`;
+			
+			if (this.examples[field].length > 1) {
+				description += ` or ${ this.examples[field][1]}`;
+			}
+			
+			return description;
+		}
+		
+		return this.getLabel(field);
 	}
 }
 

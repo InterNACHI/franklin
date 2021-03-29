@@ -2,6 +2,7 @@ export const LABELS = 1;
 export const FIELDS = 2;
 export const COUNTRY = 3;
 export const ADMINISTRATIVE_AREAS = 4;
+export const PATTERNS = 5;
 
 const definitions = {
 	[FIELDS]: [
@@ -11,8 +12,8 @@ const definitions = {
 		'administrative_area',
 		'locality',
 		'sublocality',
-		'postal_code',
 		'sorting_code',
+		'postal_code',
 	],
 	[COUNTRY]: [
 		'code',
@@ -21,11 +22,16 @@ const definitions = {
 		'labels',
 		'required',
 		'administrative_areas',
+		'patterns',
+		'examples',
 	],
 	[ADMINISTRATIVE_AREAS]: [
 		'keys',
 		'names',
 		'latin_names',
+	],
+	[PATTERNS]: [
+		'postal_code',
 	],
 };
 
@@ -39,11 +45,6 @@ const defaults = {
 		sublocality: 'Suburb',
 		postal_code: 'Postal',
 		sorting_code: 'Sorting Code',
-	},
-	[ADMINISTRATIVE_AREAS]: {
-		keys: null, 
-		names: null, 
-		latin_names: null
 	},
 };
 
@@ -78,6 +79,11 @@ export function expand(data, kind, map = []) {
 		value = -1 === value && kind in defaults && key in defaults[kind]
 			? defaults[kind][key]
 			: value;
+		
+		// We use -1 to store nulls because it saves a few bytes
+		if (-1 === value) {
+			value = null;
+		}
 		
 		return 'number' === typeof value && map.length > value
 			? map[value]
