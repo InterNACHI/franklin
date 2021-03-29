@@ -46,11 +46,11 @@ export class Country {
 	}
 	
 	isRequired(field) {
-		return -1 !== this.required.indexOf(field);
+		return 'country' === field || -1 !== this.required.indexOf(field);
 	}
 	
 	getPattern(field) {
-		return this.patterns[field] || false;
+		return this.patterns[field] || undefined;
 	}
 	
 	getLabel(field) {

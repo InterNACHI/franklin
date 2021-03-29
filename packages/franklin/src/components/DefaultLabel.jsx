@@ -4,7 +4,7 @@ export function DefaultLabel({ className, labelProps, label, required }) {
 	return (
 		<label className={ className } { ...labelProps }>
 			{ label }
-			{ required ? '*' : '' }
+			{ required ? ' *' : '' }
 		</label>
 	);
 }

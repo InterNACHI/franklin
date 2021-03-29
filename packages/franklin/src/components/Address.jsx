@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import createId from '../helpers/createId.mjs';
 import getClassNames from '../helpers/getClassNames.mjs';
 import getConfigurableComponents from '../helpers/getConfigurableComponents.mjs';
@@ -15,40 +15,44 @@ export function Address(props) {
 		onChange = noop => noop,
 		enforceRequired = true,
 		validate = true,
+		asJSON = false,
 	} = props;
 	
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
 	const [values, setValue] = useValues(defaultCountry, props.value, onChange);
 	const country = Country.find(values.country);
-	const countryId = createId(name, 'country', 'select');
 	
 	const context = {
 		name,
 		enforceRequired,
 		validate,
-		country: Country.find(values.country),
-		classNames: getClassNames(props),
-		components: getConfigurableComponents(props.components),
+		country,
+		classNames,
+		components,
+		values,
+		setValue,
+		createId: (field, element = '') => createId(name, field, element),
+		createName: asJSON
+			? () => undefined
+			: (field) => `${name}[${field}]`,
 	};
 	
 	const { Grid, GridRow } = components;
 	
 	return (
 		<AddressContext.Provider value={ context }>
-			<Grid className={ context.classNames.grid }>
+			
+			<JsonValue enabled={ asJSON } />
+			
+			<Grid className={ classNames.grid }>
 				
 				{/* Country Select Box */ }
-				<GridRow className={ context.classNames.gridRow }>
+				<GridRow className={ classNames.gridRow }>
 					<SelectColumn
-						components={ components }
-						classNames={ classNames }
-						name={ `${ name }[country]` }
+						name='country'
 						value={ values.country }
 						options={ Country.forSelection() }
-						label={ country.labels.country }
-						required={ true }
-						id={ countryId }
 						onChange={ value => setValue('country', value) }
 					/>
 				</GridRow>
@@ -56,31 +60,38 @@ export function Address(props) {
 				{/* Dynamic Grid */ }
 				{ country.grid.map((row, index) => <Row
 					key={ index }
-					name={ name }
 					row={ row }
-					classNames={ classNames }
-					components={ components }
-					country={ country }
-					values={ values }
-					setValue={ setValue }
 				/>) }
 			</Grid>
+			
 		</AddressContext.Provider>
 	);
 }
 
-function Row(props) {
-	const { name, row, components, classNames, country, values, setValue } = props;
+function JsonValue({ enabled }) {
+	const { name, values } = useContext(AddressContext);
+	
+	if (!enabled) {
+		return null;
+	}
+	
+	return <input type="hidden" name={ name } value={ JSON.stringify(values) } />;
+}
+
+function Row({ row }) {
+	const {
+		components,
+		classNames,
+		values,
+		setValue,
+	} = useContext(AddressContext);
+	
 	const { GridRow } = components;
 	
 	return (
 		<GridRow className={ classNames.gridRow }>
 			{ row.map(field => <Column
 				key={ field }
-				components={ components }
-				classNames={ classNames }
-				country={ country }
-				inputName={ name }
 				name={ field }
 				value={ values[field] }
 				onChange={ value => setValue(field, value) }
@@ -90,9 +101,9 @@ function Row(props) {
 }
 
 function Column(props) {
-	const { inputName, name, value, components, classNames, country, onChange } = props;
+	const { name, value, onChange } = props;
+	const { country } = useContext(AddressContext);
 	const { administrative_areas } = country;
-	const label = country.getLabel(name);
 	
 	if ('administrative_area' === name && administrative_areas.length) {
 		const options = administrative_areas.map(administrative_area => {
@@ -106,44 +117,35 @@ function Column(props) {
 		options.unshift({ label: '--', value: '' });
 		
 		return <SelectColumn
-			components={ components }
-			classNames={ classNames }
-			name={ `${ inputName }[${name}]` }
+			name={ name }
 			value={ value }
-			label={ label }
-			id={ createId(name, name, 'select') }
-			required={ country.isRequired(name) }
 			onChange={ value => onChange(value) }
 			options={ options }
 		/>;
 	}
 	
 	return <InputColumn
-		components={ components }
-		classNames={ classNames }
-		name={ `${ inputName }[${ name }]` }
+		name={ name }
 		value={ value }
-		label={ label }
-		id={ createId(name, name, 'select') }
-		required={ country.isRequired(name) }
 		onChange={ value => onChange(value) }
-		pattern={ country.getPattern(name) }
-		title={ country.getDescription(name) }
 	/>;
 }
 
 function SelectColumn(props) {
 	const {
-		components,
-		classNames,
 		name,
 		value,
-		label,
-		id,
-		required,
 		onChange,
 		options,
 	} = props;
+	
+	const { 
+		components, 
+		classNames, 
+		country, 
+		createId, 
+		createName
+	} = useContext(AddressContext);
 	
 	const {
 		GridColumn,
@@ -152,19 +154,21 @@ function SelectColumn(props) {
 		Option,
 	} = components;
 	
+	const id = createId(name);
+	
 	return (
 		<GridColumn className={ classNames.gridColumn }>
 			<Label
-				label={ label }
-				required={ required }
+				label={ country.getLabel(name) }
+				required={ country.isRequired(name) }
 				labelProps={ { htmlFor: id } }
 				className={ classNames.label }
 			/>
 			<Select
 				selectProps={ {
-					id: id,
-					value: value,
-					name: name,
+					id,
+					value,
+					name: createName(name),
 					onChange: e => onChange(e.target.value),
 				} }
 				className={ classNames.select }
@@ -184,17 +188,20 @@ function SelectColumn(props) {
 
 function InputColumn(props) {
 	const {
-		components,
-		classNames,
 		name,
 		value,
-		label,
-		id,
-		required,
 		onChange,
-		pattern,
-		title,
 	} = props;
+	
+	const {
+		enforceRequired,
+		validate,
+		components,
+		classNames,
+		country,
+		createId,
+		createName
+	} = useContext(AddressContext);
 	
 	const {
 		GridColumn,
@@ -202,10 +209,13 @@ function InputColumn(props) {
 		Input,
 	} = components;
 	
+	const id = createId(name);
+	const required = enforceRequired && country.isRequired(name);
+	
 	return (
 		<GridColumn className={ classNames.gridColumn }>
 			<Label
-				label={ label }
+				label={ country.getLabel(name) }
 				required={ required }
 				labelProps={ { htmlFor: id } }
 				className={ classNames.label }
@@ -215,11 +225,13 @@ function InputColumn(props) {
 				className={ classNames.input }
 				inputProps={ {
 					id,
-					name,
+					name: createName(name),
 					value,
-					pattern,
+					pattern: validate
+						? country.getPattern(name)
+						: null,
 					required,
-					title,
+					title: country.getDescription(name),
 					autoCorrect: "off",
 					autoComplete: getAutoComplete(name),
 					spellCheck: "false",

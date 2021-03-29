@@ -4,7 +4,14 @@ import tested_countries from './tested-countries.json';
 import Flag from 'react-country-flag';
 
 export default function App() {
-	const [data, setData] = useState({});
+	const [data, setData] = useState(() => {
+		try {
+			return JSON.parse(new URLSearchParams(document.location.search).get('address') || '{}');
+		} catch (e) {
+			return {};
+		}
+	});
+	
 	const feedback_requested = -1 !== tested_countries.indexOf(data.country);
 	
 	return (
@@ -42,6 +49,8 @@ export default function App() {
 			<div className="md:w-1/2 mx-4 md:mx-0">
 				<form action="" method="get" className="bg-white rounded p-8">
 					<Address
+						asJSON={true}
+						value={ data }
 						onChange={ value => setData(value) }
 						classNames={ {
 							select: "block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50",
