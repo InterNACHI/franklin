@@ -1,3 +1,5 @@
+/*! tailwindcss v2.0.3 | MIT License | https://tailwindcss.com */
+
 /*! modern-normalize v1.0.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
 
 /*
@@ -439,6 +441,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
+  opacity: 1;
   color: #9ca3af;
 }
 
@@ -10952,6 +10955,10 @@ select {
 
 .cursor-move {
   cursor: move;
+}
+
+.cursor-help {
+  cursor: help;
 }
 
 .cursor-not-allowed {
@@ -29311,6 +29318,43 @@ select {
   animation: bounce 1s infinite;
 }
 
+.token.tag, .token.class-name, .token.selector, .token.selector .class, .token.function {
+  --tw-text-opacity: 1;
+  color: rgba(248, 113, 113, var(--tw-text-opacity));
+}
+
+.token.attr-name, .token.keyword, .token.rule, .token.operator, .token.pseudo-class, .token.important {
+  --tw-text-opacity: 1;
+  color: rgba(96, 165, 250, var(--tw-text-opacity));
+}
+
+.token.attr-value, .token.class, .token.string, .token.number, .token.unit, .token.color {
+  --tw-text-opacity: 1;
+  color: rgba(110, 231, 183, var(--tw-text-opacity));
+}
+
+.token.punctuation, .token.module, .token.property {
+  --tw-text-opacity: 1;
+  color: rgba(191, 219, 254, var(--tw-text-opacity));
+}
+
+.token.atapply .token:not(.rule):not(.important) {
+  color: inherit;
+}
+
+.language-shell .token:not(.comment) {
+  color: inherit;
+}
+
+.language-css .token.function {
+  color: inherit;
+}
+
+.token.comment {
+  --tw-text-opacity: 1;
+  color: rgba(156, 163, 175, var(--tw-text-opacity));
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
@@ -39545,6 +39589,10 @@ select {
 
   .sm\:cursor-move {
     cursor: move;
+  }
+
+  .sm\:cursor-help {
+    cursor: help;
   }
 
   .sm\:cursor-not-allowed {
@@ -68097,6 +68145,10 @@ select {
     cursor: move;
   }
 
+  .md\:cursor-help {
+    cursor: help;
+  }
+
   .md\:cursor-not-allowed {
     cursor: not-allowed;
   }
@@ -96645,6 +96697,10 @@ select {
 
   .lg\:cursor-move {
     cursor: move;
+  }
+
+  .lg\:cursor-help {
+    cursor: help;
   }
 
   .lg\:cursor-not-allowed {
@@ -125197,6 +125253,10 @@ select {
     cursor: move;
   }
 
+  .xl\:cursor-help {
+    cursor: help;
+  }
+
   .xl\:cursor-not-allowed {
     cursor: not-allowed;
   }
@@ -153745,6 +153805,10 @@ select {
 
   .\32xl\:cursor-move {
     cursor: move;
+  }
+
+  .\32xl\:cursor-help {
+    cursor: help;
   }
 
   .\32xl\:cursor-not-allowed {

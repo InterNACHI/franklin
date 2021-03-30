@@ -6,7 +6,7 @@ import useValues from '../helpers/useValues.mjs';
 import getAutoComplete from '../helpers/getAutoComplete.mjs';
 import Country from '../models/Country.mjs';
 
-const AddressContext = React.createContext();
+const AddressContext = React.createContext({});
 
 export function Address(props) {
 	const {
@@ -62,6 +62,7 @@ export function Address(props) {
 					key={ index }
 					row={ row }
 				/>) }
+				
 			</Grid>
 			
 		</AddressContext.Provider>
