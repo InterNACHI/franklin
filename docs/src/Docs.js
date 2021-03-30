@@ -211,6 +211,12 @@ export default function Docs() {
 				/>
 			` } />
 			
+			<div className="my-4 text-right">
+				<a className="text-blue-500 underline" href="https://codesandbox.io/s/franklin-demo-qjgl4" target="_blank" rel="noopener">
+					Try it on CodeSandbox
+				</a>
+			</div>
+			
 			<h3 className="tracking-tight font-semibold sm:leading-none text-xl text-gray-500 mt-8 mb-4">
 				Standalone API
 			</h3>
@@ -249,6 +255,12 @@ export default function Docs() {
 				});
 				</script>
 			` } />
+			
+			<div className="my-4 text-right">
+				<a className="text-blue-500 underline" href="https://codesandbox.io/s/franklin-standalone-55yh8" target="_blank" rel="noopener">
+					Try it on CodeSandbox
+				</a>
+			</div>
 			
 			<h3 className="tracking-tight font-semibold sm:leading-none text-xl text-gray-500 mt-8 mb-4">
 				Data Format
