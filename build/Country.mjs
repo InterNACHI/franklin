@@ -19,7 +19,8 @@ export default class Country {
 			required: buildRequired(this.definition),
 			administrative_areas: buildAdministrativeAreas(this.definition),
 			patterns: compress({
-				postal_code: this.definition.zip,
+				// We want to force alphas to be case insensitive
+				postal_code: (this.definition.zip || '').replace(/(\[[^\]]*)(A-Z)([^\]]*])/g, '$1A-Za-z$3'),
 			}, PATTERNS),
 			examples: compress({
 				postal_code: (this.definition.zipex || '').split(',').slice(0, 2),

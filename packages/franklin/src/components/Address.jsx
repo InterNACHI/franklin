@@ -238,6 +238,12 @@ function InputColumn(props) {
 					spellCheck: "false",
 					"aria-required": required,
 					onChange: e => onChange(e.target.value),
+					onBlur: () => {
+						const trimmed = value.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+						if (trimmed !== value) {
+							onChange(trimmed);
+						}
+					}
 				} }
 			/>
 		</GridColumn>
