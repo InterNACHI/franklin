@@ -12,6 +12,7 @@ export function Address(props) {
 	const {
 		name = 'address',
 		defaultCountry = 'US',
+		preferredCountries = [],
 		onChange = noop => noop,
 		enforceRequired = true,
 		validate = true,
@@ -52,7 +53,7 @@ export function Address(props) {
 					<SelectColumn
 						name='country'
 						value={ values.country }
-						options={ Country.forSelection() }
+						options={ Country.forSelection(preferredCountries) }
 						onChange={ value => setValue('country', value) }
 					/>
 				</GridRow>
@@ -177,7 +178,7 @@ function SelectColumn(props) {
 				{ Object.values(options).map(option =>
 					<Option
 						key={ option.value }
-						optionProps={ { value: option.value } }
+						optionProps={ { value: option.value, disabled: true === option.disabled } }
 						className={ classNames.option }
 						label={ option.label }
 					/>

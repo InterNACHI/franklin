@@ -11,11 +11,24 @@ export class Country {
 	patterns = {};
 	examples = {};
 	
-	static forSelection() {
-		return Object.values(data.countries).map(compressed => {
+	static forSelection(preferred = []) {
+		let countries = Object.values(data.countries).map(compressed => {
 			const expanded = expand(compressed, COUNTRY);
 			return { label: expanded.name, value: expanded.code };
 		});
+		
+		if (preferred.length) {
+			preferred = preferred.map(country_code => {
+				const expanded = expand(data.countries[country_code], COUNTRY);
+				return { label: expanded.name, value: expanded.code };
+			});
+			
+			preferred.push({ label: '--------------', value: '', disabled: true });
+			
+			countries = [...preferred, ...countries];
+		}
+		
+		return countries;
 	}
 	
 	static find(country_code) {
