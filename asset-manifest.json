@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/franklin/static/css/main.4ea1e415.chunk.css",
-    "main.js": "/franklin/static/js/main.200e7d70.chunk.js",
-    "main.js.map": "/franklin/static/js/main.200e7d70.chunk.js.map",
-    "runtime-main.js": "/franklin/static/js/runtime-main.1dff309f.js",
-    "runtime-main.js.map": "/franklin/static/js/runtime-main.1dff309f.js.map",
-    "static/js/2.0b6b01cb.chunk.js": "/franklin/static/js/2.0b6b01cb.chunk.js",
-    "static/js/2.0b6b01cb.chunk.js.map": "/franklin/static/js/2.0b6b01cb.chunk.js.map",
+    "main.css": "/franklin/static/css/main.7d87d713.chunk.css",
+    "main.js": "/franklin/static/js/main.1bf6236b.chunk.js",
+    "main.js.map": "/franklin/static/js/main.1bf6236b.chunk.js.map",
+    "runtime-main.js": "/franklin/static/js/runtime-main.279b3c73.js",
+    "runtime-main.js.map": "/franklin/static/js/runtime-main.279b3c73.js.map",
+    "static/js/2.fc75cab7.chunk.js": "/franklin/static/js/2.fc75cab7.chunk.js",
+    "static/js/2.fc75cab7.chunk.js.map": "/franklin/static/js/2.fc75cab7.chunk.js.map",
     "index.html": "/franklin/index.html",
-    "static/css/main.4ea1e415.chunk.css.map": "/franklin/static/css/main.4ea1e415.chunk.css.map",
-    "static/js/2.0b6b01cb.chunk.js.LICENSE.txt": "/franklin/static/js/2.0b6b01cb.chunk.js.LICENSE.txt"
+    "static/css/main.7d87d713.chunk.css.map": "/franklin/static/css/main.7d87d713.chunk.css.map",
+    "static/js/2.fc75cab7.chunk.js.LICENSE.txt": "/franklin/static/js/2.fc75cab7.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.1dff309f.js",
-    "static/js/2.0b6b01cb.chunk.js",
-    "static/css/main.4ea1e415.chunk.css",
-    "static/js/main.200e7d70.chunk.js"
+    "static/js/runtime-main.279b3c73.js",
+    "static/js/2.fc75cab7.chunk.js",
+    "static/css/main.7d87d713.chunk.css",
+    "static/js/main.1bf6236b.chunk.js"
   ]
 }
