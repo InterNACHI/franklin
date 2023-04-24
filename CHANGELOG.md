@@ -7,17 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+[v0.6.0]
+
+### Added
 
 - Added support for `preferredCountries` prop
 
 ### Changed
 
 - Country list is now sorted by name (using locale-aware comparison)
-
-### Deprecated
-### Removed
-### Fixed
-### Security
 
 [v0.5.0]
 
@@ -29,7 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Postal code validation is now case-insensitive
 
-[unreleased]: https://github.com/InterNACHI/franklin/compare/v0.5.0...HEAD
+[unreleased]: https://github.com/InterNACHI/franklin/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/InterNACHI/franklin/releases/tag/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/InterNACHI/franklin/releases/tag/v0.4.0...v0.5.0
 [v0.5.0]: https://github.com/InterNACHI/franklin/releases/tag/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/InterNACHI/franklin/releases/tag/v0.4.0
