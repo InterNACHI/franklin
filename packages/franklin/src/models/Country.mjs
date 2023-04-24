@@ -1,4 +1,4 @@
-import { COUNTRY, expand, expandFields, FIELDS, ADMINISTRATIVE_AREAS, PATTERNS } from '../helpers/mappers.mjs';
+import { ADMINISTRATIVE_AREAS, COUNTRY, expand, expandFields, FIELDS, PATTERNS } from '../helpers/mappers.mjs';
 import data from '../../data.json';
 
 export class Country {
@@ -12,10 +12,12 @@ export class Country {
 	examples = {};
 	
 	static forSelection(preferred = []) {
-		let countries = Object.values(data.countries).map(compressed => {
-			const expanded = expand(compressed, COUNTRY);
-			return { label: expanded.name, value: expanded.code };
-		});
+		let countries = Object.values(data.countries)
+			.map(compressed => {
+				const expanded = expand(compressed, COUNTRY);
+				return { label: expanded.name, value: expanded.code };
+			})
+			.sort((a, b) => a.label.localeCompare(b.label));
 		
 		if (preferred.length) {
 			preferred = preferred.map(country_code => {
@@ -44,7 +46,7 @@ export class Country {
 		this.grid = data.grids[expanded.grid]
 			.replace('A', '1~2') // Convert "address" to address lines 1 and 2
 			.split('~')
-			.map(row => expandFields(row))
+			.map(row => expandFields(row));
 		
 		this.labels = expand(expanded.labels, FIELDS, data.labels);
 		
@@ -72,10 +74,10 @@ export class Country {
 	
 	getDescription(field) {
 		if (field in this.examples) {
-			let description = `e.g. ${this.examples[field][0]}`;
+			let description = `e.g. ${ this.examples[field][0] }`;
 			
 			if (this.examples[field].length > 1) {
-				description += ` or ${ this.examples[field][1]}`;
+				description += ` or ${ this.examples[field][1] }`;
 			}
 			
 			return description;

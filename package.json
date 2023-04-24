@@ -18,17 +18,17 @@
     "docs"
   ],
   "devDependencies": {
-    "@storybook/addon-actions": "^6.1.11",
-    "@storybook/addon-essentials": "^6.1.11",
-    "@storybook/addon-links": "^6.1.11",
-    "@storybook/react": "^6.1.11",
-    "@tailwindcss/forms": "^0.2.1",
-    "autoprefixer": "^10.1.0",
-    "lerna": "^4.0.0",
-    "microbundle": "^0.13.0",
-    "postcss": "^8.2.1",
-    "tailwindcss": "^2.0.2",
+    "@storybook/addon-actions": "^7.0.7",
+    "@storybook/addon-essentials": "^7.0.7",
+    "@storybook/addon-links": "^7.0.7",
+    "@storybook/react": "^7.0.7",
+    "@tailwindcss/forms": "^0.5.3",
+    "autoprefixer": "^10.4.14",
+    "lerna": "^6.6.1",
+    "microbundle": "^0.15.1",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.1",
     "tailwindcss-cli": "^0.1.2",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.5.0"
   }
 }
