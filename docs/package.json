@@ -1,10 +1,10 @@
 {
   "name": "@internachi/franklin-docs",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "homepage": "http://internachi.github.io/franklin",
   "private": true,
   "dependencies": {
-    "@internachi/franklin": "^0.7.0",
+    "@internachi/franklin": "^0.7.1",
     "react": "^17.0.1",
     "react-country-flag": "^2.3.0",
     "react-dom": "^17.0.1",
