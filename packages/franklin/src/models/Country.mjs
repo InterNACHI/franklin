@@ -11,7 +11,7 @@ export class Country {
 	patterns = {};
 	examples = {};
 	
-	static forSelection(preferred = []) {
+	static forSelection(preferred = [], tz = null) {
 		let countries = Object.values(data.countries)
 			.map(compressed => {
 				const expanded = expand(compressed, COUNTRY);
@@ -19,13 +19,23 @@ export class Country {
 			})
 			.sort((a, b) => a.label.localeCompare(b.label));
 		
-		if (preferred.length) {
-			preferred = preferred.map(country_code => {
-				const expanded = expand(data.countries[country_code], COUNTRY);
-				return { label: expanded.name, value: expanded.code };
+		if (tz && tz in data.tz) {
+			data.tz[tz].forEach(country => {
+				if (! preferred.includes(country)) {
+					preferred.unshift(country);
+				}
 			});
+		}
+		
+		if (preferred.length) {
+			preferred = preferred
+				.filter(country_code => country_code in data.countries)
+				.map(country_code => {
+					const expanded = expand(data.countries[country_code], COUNTRY);
+					return { label: expanded.name, value: expanded.code, key: `${ expanded.code}-preferred` };
+				});
 			
-			preferred.push({ label: '--------------', value: '', disabled: true });
+			preferred.push({ label: '--------------------', value: '', disabled: true });
 			
 			countries = [...preferred, ...countries];
 		}

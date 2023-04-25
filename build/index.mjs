@@ -8,6 +8,7 @@ import getCountryCodes from './get-country-codes.mjs';
 import getCountry from './get-country.mjs';
 import { getLabelMap } from './i18n.mjs';
 import { getMap } from './memoize-strings.mjs';
+import getTimezones from './get-timezones.mjs';
 
 (async function run() {
 	console.log('');
@@ -41,6 +42,7 @@ import { getMap } from './memoize-strings.mjs';
 		
 		const data = {
 			countries,
+			tz: getTimezones(),
 			labels: getLabelMap(),
 			grids: getMap('grid'),
 			required: getMap('required'),

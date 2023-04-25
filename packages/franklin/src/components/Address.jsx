@@ -11,13 +11,22 @@ const AddressContext = React.createContext({});
 export function Address(props) {
 	const {
 		name = 'address',
-		defaultCountry = 'US',
 		preferredCountries = [],
 		onChange = noop => noop,
 		enforceRequired = true,
 		validate = true,
 		asJSON = false,
+		autodetect = true,
 	} = props;
+	
+	let tz = null;
+	if (autodetect) {
+		try {
+			tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		} catch (e) {}
+	}
+	
+	const defaultCountry = props.defaultCountry || preferredCountries[0] || 'US';
 	
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
@@ -53,7 +62,7 @@ export function Address(props) {
 					<SelectColumn
 						name='country'
 						value={ values.country }
-						options={ Country.forSelection(preferredCountries) }
+						options={ Country.forSelection(preferredCountries, tz) }
 						onChange={ value => setValue('country', value) }
 					/>
 				</GridRow>
@@ -177,7 +186,7 @@ function SelectColumn(props) {
 			>
 				{ Object.values(options).map(option =>
 					<Option
-						key={ option.value }
+						key={ option.key || option.value }
 						optionProps={ { value: option.value, disabled: true === option.disabled } }
 						className={ classNames.option }
 						label={ option.label }

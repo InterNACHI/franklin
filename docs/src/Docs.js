@@ -74,13 +74,37 @@ export default function Docs() {
 					</tr>
 					<tr>
 						<TableCell className="text-blue-800 font-semibold">
+							autodetect
+						</TableCell>
+						<TableCell className="font-mono">
+							true
+						</TableCell>
+						<TableCell>
+							If set to true, Franklin with attempt to auto-detect the country based on the browser time zone
+						</TableCell>
+					</tr>
+					<tr>
+						<TableCell className="text-blue-800 font-semibold">
 							defaultCountry
 						</TableCell>
 						<TableCell className="font-mono">
-							"US"
+							null
 						</TableCell>
 						<TableCell>
-							The 2-char country code that the address field should default to
+							The 2-char country code that the address field should default to. If omitted, Franklin
+							will use the autodetected country, or the first item in <code className="font-mono">preferredCountries</code>, 
+							or "US" as a last resort
+						</TableCell>
+					</tr>
+					<tr>
+						<TableCell className="text-blue-800 font-semibold">
+							preferredCountries
+						</TableCell>
+						<TableCell className="font-mono">
+							[]
+						</TableCell>
+						<TableCell>
+							An array of 2-char country codes that will be shown at the top of the country select list
 						</TableCell>
 					</tr>
 					<tr>
