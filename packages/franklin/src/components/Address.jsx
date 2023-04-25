@@ -5,13 +5,13 @@ import getConfigurableComponents from '../helpers/getConfigurableComponents.mjs'
 import useValues from '../helpers/useValues.mjs';
 import getAutoComplete from '../helpers/getAutoComplete.mjs';
 import Country from '../models/Country.mjs';
+import prependAutoDetectedCountries from '../helpers/autodetect.js';
 
 const AddressContext = React.createContext({});
 
 export function Address(props) {
 	const {
 		name = 'address',
-		preferredCountries = [],
 		onChange = noop => noop,
 		enforceRequired = true,
 		validate = true,
@@ -19,14 +19,18 @@ export function Address(props) {
 		autodetect = true,
 	} = props;
 	
-	let tz = null;
+	// This may be mutated by the auto-detection process
+	let {
+		defaultCountry = null,
+		preferredCountries = [],
+	} = props;
+	
 	if (autodetect) {
-		try {
-			tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		} catch (e) {}
+		preferredCountries = prependAutoDetectedCountries(preferredCountries);
 	}
 	
-	const defaultCountry = props.defaultCountry || preferredCountries[0] || 'US';
+	// Ensure we have a default country somehow
+	defaultCountry = defaultCountry || preferredCountries[0] || 'US';
 	
 	const components = getConfigurableComponents(props.components);
 	const classNames = getClassNames(props);
@@ -45,7 +49,7 @@ export function Address(props) {
 		createId: (field, element = '') => createId(name, field, element),
 		createName: asJSON
 			? () => undefined
-			: (field) => `${name}[${field}]`,
+			: (field) => `${ name }[${ field }]`,
 	};
 	
 	const { Grid, GridRow } = components;
@@ -60,9 +64,9 @@ export function Address(props) {
 				{/* Country Select Box */ }
 				<GridRow className={ classNames.gridRow }>
 					<SelectColumn
-						name='country'
+						name="country"
 						value={ values.country }
-						options={ Country.forSelection(preferredCountries, tz) }
+						options={ Country.forSelection(preferredCountries) }
 						onChange={ value => setValue('country', value) }
 					/>
 				</GridRow>
@@ -72,9 +76,9 @@ export function Address(props) {
 					key={ index }
 					row={ row }
 				/>) }
-				
-			</Grid>
 			
+			</Grid>
+		
 		</AddressContext.Provider>
 	);
 }
@@ -150,11 +154,11 @@ function SelectColumn(props) {
 		options,
 	} = props;
 	
-	const { 
-		components, 
-		classNames, 
-		country, 
-		createId, 
+	const {
+		components,
+		classNames,
+		country,
+		createId,
 		createName
 	} = useContext(AddressContext);
 	

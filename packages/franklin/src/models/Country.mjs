@@ -11,21 +11,13 @@ export class Country {
 	patterns = {};
 	examples = {};
 	
-	static forSelection(preferred = [], tz = null) {
+	static forSelection(preferred = []) {
 		let countries = Object.values(data.countries)
 			.map(compressed => {
 				const expanded = expand(compressed, COUNTRY);
 				return { label: expanded.name, value: expanded.code };
 			})
 			.sort((a, b) => a.label.localeCompare(b.label));
-		
-		if (tz && tz in data.tz) {
-			data.tz[tz].forEach(country => {
-				if (! preferred.includes(country)) {
-					preferred.unshift(country);
-				}
-			});
-		}
 		
 		if (preferred.length) {
 			preferred = preferred
